@@ -1,0 +1,150 @@
+{
+  "_note": "All site text lives here. Placeholder copy — edit freely. Keep lines short.",
+  "meta": {
+    "title": "ARSH BY HZK",
+    "description": "ARSH BY HZK. Denim from Lahore, worn under the same sky."
+  },
+  "brand": {
+    "wordmark": "Arsh",
+    "full": "ARSH BY HZK",
+    "city": "Lahore"
+  },
+  "nav": {
+    "collection": "Collection",
+    "access": "Request access",
+    "soundOn": "Sound on",
+    "soundOff": "Sound off",
+    "bag": "Bag",
+    "team": "Team"
+  },
+  "preloader": {
+    "label": "Loading"
+  },
+  "hero": {
+    "cue": "Scroll",
+    "line1": "Worn under the same sky.",
+    "line2": "Unchosen but still here.",
+    "srSummary": "A spacecraft drifts above Earth and releases a box with a mark on its lid. The box falls, ignites into a gold comet and strikes the earth in a white light."
+  },
+  "manifesto": {
+    "lines": [
+      "Made slowly.",
+      "Worn hard.",
+      "Handed down."
+    ]
+  },
+  "catalogue": {
+    "label": "Collection",
+    "hint": "Scroll or drag",
+    "detailFit": "Fit",
+    "detailFabric": "Fabric",
+    "detailWash": "Wash",
+    "sizeGuide": "Size guide",
+    "sizeGuideNote": "Measurements to follow.",
+    "request": "Request access",
+    "close": "Close",
+    "collection": "Collection 01",
+    "detailEdition": "Edition",
+    "editionOf": "Numbered, of",
+    "size": "Size",
+    "add": "Add to bag",
+    "chooseSize": "Choose a size.",
+    "soldOut": "Sold out",
+    "soldOutRequest": "Sold out — request access",
+    "lowStock": "Only a few left in this size.",
+    "care": "Wash inside out in cold water. Let it fade."
+  },
+  "box": {
+    "eyebrow": "The box",
+    "title": "Unchosen but still here.",
+    "lidLine": "Unchosen but still here.\nSigned, HZK.",
+    "steps": [
+      {
+        "label": "01",
+        "title": "The box",
+        "text": "Plain kraft outside. The wordmark inside the lid."
+      },
+      {
+        "label": "02",
+        "title": "The tissue",
+        "text": "Folded once. Opened once."
+      },
+      {
+        "label": "03",
+        "title": "The patch",
+        "text": "Leather, debossed tonal. Kept with the piece."
+      }
+    ]
+  },
+  "founder": {
+    "eyebrow": "The founder",
+    "name": "Hammad",
+    "handle": "HZK",
+    "place": "Lahore, Pakistan",
+    "lines": [
+      "Placeholder. Two or three lines in Hammad's own words go here.",
+      "Where Arsh began, and what it is for.",
+      "Keep it plain. Let the work speak."
+    ],
+    "instagramLabel": "Instagram",
+    "portraitAlt": "Portrait of Hammad, founder of ARSH BY HZK"
+  },
+  "access": {
+    "eyebrow": "Request access",
+    "title": "The first collection opens by invitation.",
+    "text": "Leave your email. We write once, when it opens.",
+    "label": "Email address",
+    "placeholder": "you@example.com",
+    "button": "Request access",
+    "sending": "Sending",
+    "success": "Received. We will write to you.",
+    "invalid": "Please enter a valid email address.",
+    "error": "Something went wrong. Please try again.",
+    "more": "Add your name and size",
+    "already": "You are already on the list. We write once, when it opens."
+  },
+  "footer": {
+    "tag": "Authentic Denim Co.",
+    "place": "Lahore, Pakistan",
+    "instagram": "Instagram",
+    "smallprint": "© 2026 ARSH BY HZK",
+    "sign": "Until the sun goes out."
+  },
+  "waitlist": {
+    "pageTitle": "Waitlist — ARSH BY HZK",
+    "eyebrow": "Request access",
+    "title": "Opens by invitation.",
+    "lede": "The first collection opens by invitation. Leave your details and we write once, when it opens.",
+    "tag": "Authentic Denim Co. — Lahore, Pakistan",
+    "name": "Name",
+    "email": "Email address",
+    "phone": "WhatsApp or phone (optional)",
+    "city": "City (optional)",
+    "interest": "Interested in",
+    "interestAny": "Anything",
+    "size": "Size (optional)",
+    "sizeAny": "Not sure yet",
+    "heard": "How did you hear about us? (optional)",
+    "heardOptions": [
+      "Instagram",
+      "A friend",
+      "HZK",
+      "Something else"
+    ],
+    "consent": "Write to me when the first collection opens.",
+    "button": "Join the waitlist",
+    "sending": "Sending",
+    "required": "Please complete the highlighted fields.",
+    "invalidEmail": "Please enter a valid email address.",
+    "invalidPhone": "Please enter a valid phone number, or leave it empty.",
+    "consentMissing": "Please tick the box so we know we may write to you.",
+    "already": "You are already on the list. We write once, when it opens.",
+    "error": "Something went wrong. Please try again.",
+    "ticketLabel": "Waitlist",
+    "ticketNote": "We will write to {email} when it opens.",
+    "back": "Back to the site",
+    "hint": "Break the seal",
+    "letterTitle": "Request access",
+    "sealLabel": "Break the wax seal to open the envelope"
+  }
+}

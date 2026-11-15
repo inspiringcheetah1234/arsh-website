@@ -1,0 +1,73 @@
+/* ARSH — team page: a scroll-driven reel of portrait cards, then everyone at once. Portraits are always black and white. */
+
+.team-page { background: var(--cream); color: var(--ink); }
+html:has(.team-page) { background: var(--cream); }
+
+/* ---------------------------------------------------------------- Intro */
+.team-intro { padding: clamp(8rem, 20vh, 12rem) var(--gutter) clamp(3rem, 9vh, 6rem); color: var(--blue); }
+.team-intro__title { font-size: clamp(4.5rem, 14.5vw, 13.5rem); max-width: 12ch; }
+.team-intro__lede { margin-top: 2rem; max-width: 32rem; color: var(--ink); font-size: 1.125rem; }
+
+/* ---------------------------------------------------------------- Reel
+   Default (no script, reduced motion): a plain horizontal scroller you swipe.
+   With script: .is-pinned makes the stage stick and scroll progress drives the track. */
+.reel { --cw: min(86vw, 46rem); --ch: min(70svh, 31rem); position: relative; }
+.reel__stage { position: relative; }
+.reel__track {
+  display: flex; gap: 2rem; margin: 0; padding: 1rem var(--gutter) 2rem;
+  overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin;
+}
+.member { flex: 0 0 var(--cw); scroll-snap-align: center; }
+
+.member__card {
+  height: var(--ch); display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+  border: 1px solid rgba(13, 13, 13, 0.28); background: var(--paper);
+}
+.member__photo { margin: 0; border-right: 1px solid rgba(13, 13, 13, 0.28); background: #E6E3DF; overflow: hidden; }
+.member__photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; filter: grayscale(1) contrast(1.06); }
+.member__info { padding: clamp(1rem, 2.4vw, 1.75rem); display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem; min-width: 0; }
+.member__name { font-size: clamp(2.5rem, 5.6vw, 4.25rem); color: var(--blue); overflow-wrap: break-word; }
+.member__role { margin-bottom: 0.9rem; color: var(--ink); font-weight: 600; }
+.member__facts { display: grid; gap: 0.6rem; margin: 0; }
+.member__facts div { display: grid; gap: 0.1rem; }
+.member__facts dt { color: var(--ink-soft); font-family: var(--font-label); font-weight: 500; font-size: 0.625rem; letter-spacing: var(--track); text-transform: uppercase; }
+.member__facts dd { margin: 0; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem; }
+.swatch { display: inline-block; width: 0.75rem; height: 0.75rem; border-radius: 50%; border: 1px solid rgba(13, 13, 13, 0.4); flex: none; }
+
+/* Pinned mode */
+.reel.is-pinned { height: var(--reel-h, 600vh); }
+.reel.is-pinned .reel__stage { position: sticky; top: 0; height: 100svh; overflow: hidden; display: flex; align-items: center; }
+.reel.is-pinned .reel__track {
+  overflow: visible; scroll-snap-type: none; padding: 0; margin: 0; width: max-content; will-change: transform;
+  padding-left: calc(50vw - var(--cw) / 2); padding-right: calc(50vw - var(--cw) / 2);
+}
+.reel.is-pinned .member { will-change: transform, opacity; transform-origin: 50% 50%; }
+
+.reel__ui { display: none; }
+.reel.is-pinned .reel__ui {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.25rem;
+  position: absolute; left: var(--gutter); right: var(--gutter); bottom: max(1.5rem, env(safe-area-inset-bottom)); color: var(--blue);
+}
+.reel__bar { height: 3px; background: rgba(43, 61, 176, 0.2); }
+.reel__bar span { display: block; height: 100%; background: var(--orbit); transform-origin: left; transform: scaleX(0); }
+
+/* ---------------------------------------------------------------- Everyone */
+.everyone { padding: clamp(5rem, 14vh, 9rem) var(--gutter) clamp(5rem, 14vh, 9rem); border-top: 1px solid rgba(13, 13, 13, 0.18); }
+.everyone__title { font-size: clamp(4.5rem, 12vw, 10.5rem); color: var(--blue); margin-bottom: clamp(2rem, 6vh, 4rem); }
+.everyone__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 1.25rem; margin: 0; }
+.tile { display: grid; gap: 0.6rem; text-align: left; width: 100%; cursor: pointer; }
+.tile img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 20%; filter: grayscale(1) contrast(1.06); border: 1px solid rgba(13, 13, 13, 0.28); background: #E6E3DF; transition: transform 0.4s var(--ease); }
+.tile:hover img, .tile:focus-visible img { transform: translateY(-4px); }
+.tile:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
+.tile__name { font-family: var(--font-label); font-weight: 600; font-size: 0.75rem; letter-spacing: var(--track); text-transform: uppercase; color: var(--blue); }
+.tile__role { font-size: 0.875rem; color: var(--ink-soft); }
+
+@media (max-width: 700px) {
+  .reel { --cw: 88vw; --ch: min(64svh, 27rem); }
+  .member__card { grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr); }
+  .member__name { font-size: clamp(1.7rem, 8.2vw, 2.3rem); }
+  .member__facts dd { font-size: 0.8125rem; }
+  .everyone__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .reel.is-pinned .reel__hint { display: none; }
+  .reel.is-pinned .reel__ui { grid-template-columns: auto 1fr; }
+}

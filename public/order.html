@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Your order — ARSH BY HZK</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#F6ECE1">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preload" href="/assets/brand/wordmark.svg" as="image" type="image/svg+xml" crossorigin>
+  <link rel="preload" href="/assets/fonts/BootzyCondensedTM-Regular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="/assets/fonts/fallback/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/fonts.css">
+  <link rel="stylesheet" href="/css/brand.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/shop.css">
+</head>
+<body class="page">
+  <header class="header" data-theme="light">
+    <a class="header__home header__home--word" href="/" aria-label="ARSH BY HZK, home"><span class="wordmark" aria-hidden="true"></span></a>
+    <nav class="header__nav" aria-label="Primary">
+      <a href="/#collection" class="ui">Collection</a>
+      <button type="button" class="ui header__bag" id="bag-toggle"><span>Bag</span> <span class="count"></span></button>
+    </nav>
+  </header>
+  <main id="main">
+    <section id="order-view" hidden aria-live="polite"></section>
+    <section id="order-lookup" hidden>
+      <h1 class="display">Your order</h1>
+      <p class="lede">Enter your order number and the email you used.</p>
+      <form class="lookup" id="lookup-form" novalidate>
+        <div class="field"><label for="l-number">Order number</label><input id="l-number" name="n" placeholder="ARSH-10001" required autocapitalize="characters"></div>
+        <div class="field"><label for="l-email">Email</label><input id="l-email" name="email" type="email" autocomplete="email" required></div>
+        <button class="button ui" type="submit">Find order</button>
+        <p class="form-status ui" id="lookup-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+  <script type="module" src="/js/order.js"></script>
+</body>
+</html>

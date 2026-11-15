@@ -1,0 +1,24 @@
+{
+  "name": "arsh-website",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "db:migrate": "node server/cli.js migrate",
+    "db:seed": "node server/cli.js seed",
+    "admin:create": "node server/cli.js admin:create",
+    "test": "node scripts/test.mjs && node scripts/test-shop.mjs && node scripts/test-images.mjs && node scripts/test-waitlist.mjs && node scripts/test-team.mjs && node scripts/test-brand.mjs"
+  },
+  "dependencies": {
+    "@vercel/blob": "2.8.2",
+    "pg": "8.16.3",
+    "qrcode": "1.5.4",
+    "sharp": "0.34.4"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.3.7"
+  }
+}

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Checkout — ARSH BY HZK</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#F6ECE1">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preload" href="/assets/brand/wordmark.svg" as="image" type="image/svg+xml" crossorigin>
+  <link rel="preload" href="/assets/fonts/BootzyCondensedTM-Regular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="/assets/fonts/fallback/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/fonts.css">
+  <link rel="stylesheet" href="/css/brand.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/shop.css">
+</head>
+<body class="page">
+  <header class="header" data-theme="light">
+    <a class="header__home header__home--word" href="/" aria-label="ARSH BY HZK, home"><span class="wordmark" aria-hidden="true"></span></a>
+    <nav class="header__nav" aria-label="Primary">
+      <a href="/#collection" class="ui">Collection</a>
+      
+    </nav>
+  </header>
+  <main id="main">
+    <h1 class="display">Checkout</h1>
+    <p class="lede">Every piece is numbered and registered to you before it leaves Lahore.</p>
+    <div id="checkout-empty" class="empty-state" hidden><p>Your bag is empty. <a href="/#collection">Return to the collection</a>.</p></div>
+    <form class="checkout" id="checkout" novalidate hidden>
+      <div>
+        <fieldset class="form-section">
+          <legend class="ui">Contact</legend>
+          <div class="fields">
+            <div class="field field--full"><label for="f-name">Full name</label><input id="f-name" name="name" autocomplete="name" required></div>
+            <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required></div>
+            <div class="field"><label for="f-phone">Phone</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+92 3xx xxxxxxx" required></div>
+          </div>
+        </fieldset>
+        <fieldset class="form-section">
+          <legend class="ui">Delivery</legend>
+          <div class="fields">
+            <div class="field field--full"><label for="f-line1">Address</label><input id="f-line1" name="line1" autocomplete="address-line1" required></div>
+            <div class="field field--full"><label for="f-line2">Apartment, area (optional)</label><input id="f-line2" name="line2" autocomplete="address-line2"></div>
+            <div class="field"><label for="f-city">City</label><input id="f-city" name="city" autocomplete="address-level2" required></div>
+            <div class="field"><label for="f-province">Province</label>
+              <select id="f-province" name="province" autocomplete="address-level1">
+                <option value="">—</option><option>Punjab</option><option>Sindh</option><option>Khyber Pakhtunkhwa</option><option>Balochistan</option><option>Islamabad Capital Territory</option><option>Gilgit-Baltistan</option><option>Azad Jammu and Kashmir</option>
+              </select></div>
+            <div class="field"><label for="f-postal">Postal code (optional)</label><input id="f-postal" name="postal" autocomplete="postal-code" inputmode="numeric"></div>
+          </div>
+        </fieldset>
+        <fieldset class="form-section">
+          <legend class="ui">Registration</legend>
+          <div class="fields">
+            <div class="field field--full"><label for="f-cert">Name on your pieces</label><input id="f-cert" name="certificateName" maxlength="80">
+              <small>Each piece carries a code. Scanning it shows this name, the article, its number and the date. Leave empty to use your full name.</small></div>
+          </div>
+        </fieldset>
+        <fieldset class="form-section">
+          <legend class="ui">Payment</legend>
+          <div class="choice" id="payment-methods"></div>
+        </fieldset>
+        <fieldset class="form-section">
+          <legend class="ui">Notes</legend>
+          <div class="field field--full"><label for="f-notes" class="sr-only">Order notes</label><textarea id="f-notes" name="notes" maxlength="1000" placeholder="Anything we should know (optional)"></textarea></div>
+        </fieldset>
+      </div>
+      <aside class="summary" aria-labelledby="summary-title">
+        <h2 class="ui" id="summary-title">Your order</h2>
+        <ul class="summary__lines" id="summary-lines" role="list"></ul>
+        <dl class="summary__totals ui">
+          <div><dt>Subtotal</dt><dd id="sum-subtotal"></dd></div>
+          <div><dt>Shipping</dt><dd id="sum-shipping"></dd></div>
+          <div class="grand"><dt>Total</dt><dd id="sum-total"></dd></div>
+        </dl>
+        <button class="button ui" type="submit" id="place">Place order</button>
+        <p class="form-status ui" id="checkout-status" role="status" aria-live="polite"></p>
+      </aside>
+    </form>
+  </main>
+  <script type="module" src="/js/checkout.js"></script>
+</body>
+</html>

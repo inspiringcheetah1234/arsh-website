@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>The team — ARSH BY HZK</title>
+  <meta name="description" content="Every person who makes ARSH BY HZK, on one page.">
+  <meta name="theme-color" content="#F6ECE1">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preload" href="/assets/brand/wordmark.svg" as="image" type="image/svg+xml" crossorigin>
+  <link rel="preload" href="/assets/fonts/BootzyCondensedTM-Regular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="/assets/fonts/fallback/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/fonts.css">
+  <link rel="stylesheet" href="/css/brand.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/shop.css">
+  <link rel="stylesheet" href="/css/team.css">
+</head>
+<body class="team-page">
+  <header class="header" data-theme="light">
+    <a class="header__home" href="/" aria-label="ARSH BY HZK, home"><span class="mark" aria-hidden="true"></span></a>
+    <nav class="header__nav" aria-label="Primary">
+      <a href="/#collection" class="ui">Collection</a>
+      <a href="/team" class="ui" aria-current="page">Team</a>
+      <a href="/waitlist" class="ui">Request access</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- Intro -->
+    <section class="team-intro" aria-labelledby="team-title">
+      <p class="eyebrow ui" id="team-eyebrow">The team</p>
+      <h1 class="team-intro__title display" id="team-title">Every one of us is on this page.</h1>
+      <p class="team-intro__lede" id="team-lede"></p>
+    </section>
+
+    <!-- The reel: scroll sideways through everyone -->
+    <section class="reel" id="reel" aria-label="The team, one person at a time">
+      <div class="reel__stage" id="reel-stage">
+        <ul class="reel__track" id="reel-track" role="list"></ul>
+        <div class="reel__ui">
+          <p class="reel__count ui" id="reel-count" aria-live="polite"></p>
+          <div class="reel__bar" aria-hidden="true"><span id="reel-bar"></span></div>
+          <p class="reel__hint ui" aria-hidden="true">Scroll</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Everyone at once -->
+    <section class="everyone" aria-labelledby="everyone-title">
+      <h2 class="everyone__title display" id="everyone-title">All of us</h2>
+      <ul class="everyone__grid" id="everyone-grid" role="list"></ul>
+    </section>
+  </main>
+
+  <footer class="footer" data-theme="dark">
+    <span class="footer__galaxy mark" aria-hidden="true"></span>
+    <div class="footer__sign">
+      <span class="lockup"><span class="wordmark" role="img" aria-label="Arsh by HZK"></span><span class="mark" aria-hidden="true"></span></span>
+      <p class="footer__tag ui">Authentic Denim Co.</p>
+    </div>
+    <div class="footer__meta ui">
+      <ul role="list">
+        <li>Lahore, Pakistan</li>
+        <li id="footer-instagram"></li>
+        <li><a href="/">Home</a></li>
+      </ul>
+      <p class="footer__sig">Until the sun goes out.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/team.js"></script>
+</body>
+</html>

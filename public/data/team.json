@@ -1,0 +1,73 @@
+{
+  "_note": "Edit the team here. photo: path to a portrait (4:5, any colour; shown in black and white). Empty = the placeholder. stitch must be a brand colour name: Orbit Red, Andromeda Blue, Ticket Cream, Wax Red or Deep Space.",
+  "title": "Every one of us is on this page.",
+  "lede": "A photo of every person who makes Arsh: the ones who design it, cut it, sew it, pack it and send it.",
+  "everyone": "All of us",
+  "reelLabel": "The team",
+  "members": [
+    {
+      "name": "HAMMAD (HZK)",
+      "role": "Founder and designer",
+      "since": 2024,
+      "specialisation": "Denim, fit and the first collection",
+      "stitch": "Orbit Red",
+      "photo": ""
+    },
+    {
+      "name": "PLACEHOLDER 02",
+      "role": "Head of production",
+      "since": 2024,
+      "specialisation": "Selvedge denim, fabric sourcing",
+      "stitch": "Andromeda Blue",
+      "photo": ""
+    },
+    {
+      "name": "PLACEHOLDER 03",
+      "role": "Pattern cutter",
+      "since": 2025,
+      "specialisation": "Straight and wide cuts",
+      "stitch": "Wax Red",
+      "photo": ""
+    },
+    {
+      "name": "PLACEHOLDER 04",
+      "role": "Tailor",
+      "since": 2025,
+      "specialisation": "Jeans, waistbands and pockets",
+      "stitch": "Ticket Cream",
+      "photo": ""
+    },
+    {
+      "name": "PLACEHOLDER 05",
+      "role": "Tailor",
+      "since": 2025,
+      "specialisation": "Washing and finishing",
+      "stitch": "Andromeda Blue",
+      "photo": ""
+    },
+    {
+      "name": "PLACEHOLDER 06",
+      "role": "Embroidery and patches",
+      "since": 2025,
+      "specialisation": "Leather patches, hand embroidery",
+      "stitch": "Orbit Red",
+      "photo": ""
+    },
+    {
+      "name": "PLACEHOLDER 07",
+      "role": "Packing and fulfilment",
+      "since": 2026,
+      "specialisation": "Orders, tissue, the box",
+      "stitch": "Deep Space",
+      "photo": ""
+    },
+    {
+      "name": "PLACEHOLDER 08",
+      "role": "Content",
+      "since": 2026,
+      "specialisation": "Photography, the lookbook",
+      "stitch": "Wax Red",
+      "photo": ""
+    }
+  ]
+}

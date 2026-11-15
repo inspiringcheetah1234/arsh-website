@@ -1,0 +1,139 @@
+/* ARSH — waitlist page. Orbit Red pitch on the left. On the right, Andromeda Blue and a cream envelope sealed with Wax Red:
+   break the seal and the letter (the form) comes out. The wax-seal wordmark and the paper tints are illustration of a physical object. */
+
+.waitlist-page { background: var(--blue); color: var(--ink); }
+html:has(.waitlist-page) { background: var(--blue); }
+.waitlist-page .header { position: absolute; }
+
+.waitlist { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); min-height: 100svh; }
+
+/* ---------------------------------------------------------------- Pitch: the cover page, as a screen */
+.waitlist__pitch {
+  position: relative; overflow: hidden; background: var(--orbit); color: var(--cream);
+  padding: clamp(6.5rem, 14vh, 9rem) var(--gutter) clamp(2rem, 5vh, 3rem);
+  display: flex; flex-direction: column; justify-content: space-between; gap: 3rem;
+}
+.waitlist__galaxy { position: absolute; right: -32%; top: -8%; width: 95%; color: rgba(165, 29, 30, 0.34); pointer-events: none; }
+.waitlist__sign, .waitlist__copy, .waitlist__tag { position: relative; }
+.waitlist__sign .lockup { --w: min(78%, 380px); margin-right: calc(var(--w) * 0.16); }
+.waitlist__copy .eyebrow { color: var(--space); }
+.waitlist__title { font-size: clamp(4.5rem, 11vw, 10rem); color: var(--cream); max-width: 8ch; }
+.waitlist__lede { margin-top: 1.5rem; max-width: 26rem; color: var(--space); font-size: 1.0625rem; }
+.waitlist__tag { color: var(--space); }
+
+/* ---------------------------------------------------------------- Panel: blue, one stage, envelope and letter stacked */
+.waitlist__panel { background: var(--blue); color: var(--cream); padding: clamp(4.5rem, 11vh, 7rem) var(--gutter) 4rem; display: grid; align-content: center; justify-items: center; }
+.waitlist__stage { display: grid; width: min(100%, 34rem); }
+.waitlist__stage > * { grid-area: 1 / 1; }
+
+/* The letter: the real form, on cream paper */
+.letter {
+  align-self: start; background: var(--cream); color: var(--ink);
+  padding: clamp(1.5rem, 4vw, 2.5rem); display: grid; gap: 1.5rem;
+  box-shadow: 0 1.5rem 3rem rgba(13, 13, 13, 0.35);
+  transition: opacity 0.7s var(--ease) 0.1s, transform 0.9s var(--ease) 0.1s;
+}
+.letter:focus { outline: none; }
+.letter__head { display: flex; justify-content: space-between; align-items: flex-start; color: var(--blue); }
+.letter__head .wordmark { width: 168px; }
+.letter__head .mark { width: 44px; }
+.letter__title { color: var(--blue); margin-top: -0.5rem; }
+.letter .fields { gap: 1.25rem; }
+.field select { appearance: none; -webkit-appearance: none; background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%230D0D0D' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 0.2rem center; padding-right: 1.75rem; }
+.wl-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.consent { display: grid; grid-template-columns: auto 1fr; gap: 0.85rem; align-items: start; cursor: pointer; color: var(--ink); }
+.consent input { width: 1.25rem; height: 1.25rem; margin: 0.15rem 0 0; accent-color: var(--blue); }
+.consent input[aria-invalid="true"] { outline: 2px solid var(--wax); outline-offset: 2px; }
+.letter .button { width: 100%; }
+.letter .form-status { margin: 0; }
+.waitlist__back { color: var(--blue); }
+.waitlist__back a { border-bottom: 2px solid currentColor; padding-bottom: 0.15rem; }
+
+/* While the envelope is sealed the letter is not on the page for anyone (also inert, set by script). */
+.waitlist__stage.is-sealed .letter { opacity: 0; visibility: hidden; transform: translateY(1.5rem); transition: none; }
+
+/* ---------------------------------------------------------------- Envelope */
+.envelope {
+  position: relative; width: min(100%, 32rem); aspect-ratio: 3 / 2; justify-self: center; align-self: center;
+  transition: opacity 0.6s var(--ease), transform 0.8s var(--ease);
+}
+.envelope__hint { position: absolute; top: -2.75rem; left: 0; right: 0; text-align: center; color: var(--cream); transition: opacity 0.4s; }
+.envelope.s1 .envelope__hint { opacity: 0; }
+.envelope__scene { position: absolute; inset: 0; perspective: 1800px; }
+.envelope__scene > * { position: absolute; }
+
+.env__back { inset: 0; background: #E3D4C0; box-shadow: 0 1.5rem 2.5rem rgba(13, 13, 13, 0.42); }
+
+/* The letter inside, ruled, with the wordmark at the top */
+.env__letter {
+  left: 6%; right: 6%; top: 12%; height: 84%; z-index: 1; background: var(--paper);
+  padding: 7% 8%; display: flex; flex-direction: column; gap: 10%;
+  transition: transform 0.95s var(--ease);
+}
+.env__letter .wordmark { width: max(165px, 56%); color: var(--blue); }   /* never under the 160 px minimum */
+.env__rules { display: grid; gap: clamp(0.5rem, 2vw, 0.9rem); }
+.env__rules i { display: block; height: 2px; background: rgba(43, 61, 176, 0.3); }
+.env__rules i:last-child { width: 55%; }
+
+/* The pocket: everything except the V where the flap sits */
+.env__front { inset: 0; z-index: 2; background: var(--cream); clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%); }
+.env__folds { inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+.env__folds path { fill: none; stroke: rgba(13, 13, 13, 0.2); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+
+.env__flap { left: 0; right: 0; top: 0; height: 56%; z-index: 3; transform-origin: 50% 0; transition: transform 0.85s cubic-bezier(0.45, 0.05, 0.2, 1); }
+.env__flap span { position: absolute; inset: 0; clip-path: polygon(0 0, 100% 0, 50% 100%); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.flap__out { background: var(--cream); }
+.flap__in { background: #D6C5AE; transform: rotateX(180deg); }
+
+/* ---------------------------------------------------------------- Wax seal: two halves that part when it is broken */
+.seal {
+  left: 38%; top: 38%; width: 24%; aspect-ratio: 1; z-index: 4; padding: 0; border: 0; background: none; cursor: pointer;
+  filter: drop-shadow(0 0.4rem 0.5rem rgba(13, 13, 13, 0.35));
+  transition: transform 0.35s var(--ease);
+}
+.seal:hover:not(:disabled) { transform: scale(1.06); }
+.seal:focus-visible { outline: 3px solid var(--cream); outline-offset: 8px; border-radius: 50%; }
+.seal:disabled { cursor: default; }
+.seal__half { position: absolute; inset: 0; transition: transform 0.75s var(--ease), opacity 0.5s linear 0.25s; }
+.seal__half--l { clip-path: polygon(0 0, 54.6% 0, 47.6% 22%, 55.6% 45%, 46.6% 70%, 53.6% 100%, 0 100%); }
+.seal__half--r { clip-path: polygon(54% 0, 100% 0, 100% 100%, 53% 100%, 46% 70%, 55% 45%, 47% 22%); }
+.seal__art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.seal__word { position: absolute; left: 19%; top: 34.2%; width: 62%; color: #7A1112; }
+.envelope.s1 .seal { pointer-events: none; }
+.envelope.s1 .seal__half--l { transform: translate(-42%, 34%); opacity: 0; }
+.envelope.s1 .seal__half--r { transform: translate(44%, 46%); opacity: 0; }
+
+/* ---------------------------------------------------------------- The opening, step by step (classes added by js/envelope.js) */
+.envelope.s2 .env__flap { transform: rotateX(180deg); }
+.envelope.s2b .env__flap { z-index: 0; }                     /* once past upright, the flap lies behind the letter */
+.envelope.s3 .env__letter { transform: translateY(-62%); }   /* the letter rises out of the pocket */
+.envelope.s4 { opacity: 0; transform: translateY(2.5rem) scale(0.97); pointer-events: none; }  /* the envelope falls away; the real letter takes its place */
+
+/* ---------------------------------------------------------------- Confirmation: the boarding pass, on blue */
+.waitlist__done { align-self: start; width: 100%; display: grid; gap: 1.5rem; }
+.waitlist__done .ticket { width: 100%; grid-template-columns: 4.25rem minmax(0, 1fr); box-shadow: 0 1.5rem 3rem rgba(13, 13, 13, 0.35); }
+.waitlist__done .ticket__number { font-size: clamp(5rem, 12vw, 9rem); }
+.waitlist__note { color: var(--cream); }
+.waitlist__done .waitlist__back { color: var(--cream); }
+
+@media (max-width: 860px) {
+  .waitlist { grid-template-columns: 1fr; }
+  /* Short enough that the envelope is on the first screen of a phone. */
+  .waitlist__pitch { gap: 1.25rem; padding-top: 5rem; padding-bottom: 1.75rem; }
+  .waitlist__galaxy { right: -45%; top: -12%; width: 120%; }
+  .waitlist__sign .lockup { --w: 260px; }                       /* the smallest size that keeps the mark at 40 px */
+  .waitlist__copy .eyebrow { margin-bottom: 0.75rem; }
+  .waitlist__title { font-size: clamp(3.5rem, 17vw, 5.25rem); max-width: none; }
+  .waitlist__lede { margin-top: 0.9rem; font-size: 0.9375rem; }
+  .waitlist__tag { display: none; }
+  .waitlist__panel { align-content: start; padding-top: 1.5rem; }
+  .envelope { align-self: start; margin-top: 22%; }              /* room for the flap to swing up */
+  .waitlist__done .ticket { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) { .letter .fields { grid-template-columns: 1fr; } }
+
+/* Reduced motion, or no script: no envelope, just the letter. */
+@media (prefers-reduced-motion: reduce) {
+  .envelope { display: none !important; }
+  .waitlist__stage.is-sealed .letter { opacity: 1; visibility: visible; transform: none; }
+}

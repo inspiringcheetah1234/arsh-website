@@ -1,0 +1,109 @@
+/*
+  ARSH — brand system (from ARSH Brand Guidelines Vol. 01).
+  Loaded first on every page: storefront, shop pages, piece page and admin.
+
+  Colour    Orbit Red #F23B35 · Andromeda Blue #2B3DB0 · Ticket Cream #F6ECE1 (primary)
+            Wax Red #A51D1E · Deep Space #0D0D0D (supporting)
+            Balance on a page: roughly 45% cream, 25% red, 20% blue, the rest wax and space.
+  Type      Bootzy Condensed (H1, all caps) · Bootzy (H2, sentence case) · Mergo (labels) · Neue Montreal (body)
+  Logo      The script wordmark and the Andromeda mark are artwork. Never type, stretch, outline, rotate,
+            shadow or redraw them. Wordmark ≥ 160 px wide, mark ≥ 40 px wide.
+
+  Contrast (checked):  blue on cream 7.5 · cream on blue 7.5 · cream on wax 6.5 · wax on cream 6.5
+                       cream on space 16.7 · red on space 5.0 · space on red 5.0
+                       cream on red 3.3 → large display type only, never small text.
+*/
+
+:root {
+  --orbit: #F23B35;
+  --blue: #2B3DB0;
+  --cream: #F6ECE1;
+  --wax: #A51D1E;
+  --space: #0D0D0D;
+
+  --ink: var(--space);
+  --ink-soft: #4A4642;          /* 7.9:1 on cream */
+  --cream-soft: #D9CFC5;        /* soft text on blue, wax and space */
+  --paper: #FBF6EE;             /* a lighter cream, for cards on cream */
+  --line: rgba(13, 13, 13, 0.16);
+  --kraft: #CDBB9F;             /* packaging illustration only: plain kraft, not a brand colour */
+
+  /* Type: to use the real brand fonts, drop the files in assets/fonts/ and uncomment css/fonts.css. */
+  --font-display: "Bootzy Condensed", "Archivo", Impact, "Arial Narrow", sans-serif;
+  --font-heading: "Bootzy", "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-label: "Mergo", "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Neue Montreal", "Inter", "Helvetica Neue", Arial, sans-serif;
+
+  --ui-size: 0.6875rem;
+  --track: 0.14em;
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------------------------------------------------------------- Type */
+/* H1 · Bootzy Condensed · all caps · 0.86 line height */
+.display {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 62;   /* only the stand-in font has this axis */
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.86;
+  letter-spacing: -0.005em;
+  font-variant-numeric: lining-nums;
+}
+/* H2 · Bootzy · sentence case · regular width */
+.heading {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.012em;
+  font-variant-numeric: lining-nums;
+}
+/* Label · Mergo · small details, section titles */
+.label { font-family: var(--font-label); font-weight: 500; font-size: 1rem; line-height: 1.2; }
+.ui {
+  font-family: var(--font-label);
+  font-weight: 500;
+  font-size: var(--ui-size);
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+.sr-only {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------------------------------------------------------------- Logo */
+.wordmark, .mark {
+  display: block;
+  background-color: currentColor;
+  -webkit-mask: var(--src) center / contain no-repeat;
+  mask: var(--src) center / contain no-repeat;
+}
+.wordmark { --src: url("/assets/brand/wordmark.svg"); aspect-ratio: 1906 / 972; }
+.mark { --src: url("/assets/brand/andromeda-mark.svg"); aspect-ratio: 1590 / 1264; }
+
+/* Lockup: the mark sits to the right of the wordmark, aligned to the top of the h.
+   Set the size with --w (the wordmark's width). The mark is 15.5% of it, so it stays ≥ 40 px
+   whenever --w ≥ 258 px; smaller than that, use the wordmark alone (≥ 160 px) or the mark alone. */
+.lockup { position: relative; display: block; width: var(--w, 260px); }
+.lockup > .wordmark { width: 100%; }
+.lockup > .mark { position: absolute; width: 15.5%; left: 103%; top: -1%; }
+
+/* ---------------------------------------------------------------- Buttons */
+.button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+  min-height: 3.25rem; padding: 0 2rem;
+  font-family: var(--font-label); font-weight: 500; font-size: var(--ui-size);
+  letter-spacing: var(--track); text-transform: uppercase;
+  background: var(--blue); color: var(--cream); border: 2px solid var(--blue);
+  cursor: pointer; text-decoration: none;
+  transition: background 0.35s var(--ease), color 0.35s var(--ease), border-color 0.35s var(--ease);
+}
+.button:hover { background: transparent; color: var(--blue); }
+.button--red { background: var(--orbit); color: var(--space); border-color: var(--orbit); }
+.button--red:hover { background: transparent; color: var(--orbit); }
+.button--cream { background: var(--cream); color: var(--blue); border-color: var(--cream); }
+.button--cream:hover { background: transparent; color: var(--cream); }
+.button[disabled] { opacity: 0.55; cursor: progress; }

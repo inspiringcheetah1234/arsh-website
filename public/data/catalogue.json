@@ -1,0 +1,118 @@
+{
+  "_note": "Placeholder lineup. Replace name/image/meta with real pieces. Images: transparent WebP/PNG, full body, identical crop, feet on the same baseline (see scripts/cutout.md). Prices only render when showPrices is true.",
+  "collection": "Collection 01",
+  "showPrices": false,
+  "currency": "PKR",
+  "items": [
+    {
+      "name": "Placeholder 01",
+      "slug": "placeholder-01",
+      "image": "/assets/catalogue/placeholder-01.webp",
+      "meta": {
+        "fit": "Straight",
+        "wash": "Rinse",
+        "fabric": "To be confirmed"
+      },
+      "price": null
+    },
+    {
+      "name": "Placeholder 02",
+      "slug": "placeholder-02",
+      "image": "/assets/catalogue/placeholder-02.webp",
+      "meta": {
+        "fit": "Wide",
+        "wash": "Indigo",
+        "fabric": "To be confirmed"
+      },
+      "price": null
+    },
+    {
+      "name": "Placeholder 03",
+      "slug": "placeholder-03",
+      "image": "/assets/catalogue/placeholder-03.webp",
+      "meta": {
+        "fit": "Slim",
+        "wash": "Black",
+        "fabric": "To be confirmed"
+      },
+      "price": null
+    },
+    {
+      "name": "Placeholder 04",
+      "slug": "placeholder-04",
+      "image": "/assets/catalogue/placeholder-04.webp",
+      "meta": {
+        "fit": "Flare",
+        "wash": "Mid blue",
+        "fabric": "To be confirmed"
+      },
+      "price": null
+    },
+    {
+      "name": "Placeholder 05",
+      "slug": "placeholder-05",
+      "image": "/assets/catalogue/placeholder-05.webp",
+      "meta": {
+        "fit": "Relaxed",
+        "wash": "Light",
+        "fabric": "To be confirmed"
+      },
+      "price": null
+    },
+    {
+      "name": "Placeholder 06",
+      "slug": "placeholder-06",
+      "image": "/assets/catalogue/placeholder-06.webp",
+      "meta": {
+        "fit": "Straight",
+        "wash": "Ecru",
+        "fabric": "To be confirmed"
+      },
+      "price": null
+    },
+    {
+      "name": "Placeholder 07",
+      "slug": "placeholder-07",
+      "image": "/assets/catalogue/placeholder-07.webp",
+      "meta": {
+        "fit": "Tapered",
+        "wash": "Indigo",
+        "fabric": "To be confirmed"
+      },
+      "price": null
+    },
+    {
+      "name": "Placeholder 08",
+      "slug": "placeholder-08",
+      "image": "/assets/catalogue/placeholder-08.webp",
+      "meta": {
+        "fit": "Wide",
+        "wash": "Rinse",
+        "fabric": "To be confirmed"
+      },
+      "price": null
+    },
+    {
+      "name": "Placeholder 09",
+      "slug": "placeholder-09",
+      "image": "/assets/catalogue/placeholder-09.webp",
+      "meta": {
+        "fit": "Slim",
+        "wash": "Mid blue",
+        "fabric": "To be confirmed"
+      },
+      "price": null
+    },
+    {
+      "name": "Placeholder 10",
+      "slug": "placeholder-10",
+      "image": "/assets/catalogue/placeholder-10.webp",
+      "meta": {
+        "fit": "Flare",
+        "wash": "Black",
+        "fabric": "To be confirmed"
+      },
+      "price": null
+    }
+  ]
+}

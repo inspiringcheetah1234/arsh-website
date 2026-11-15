@@ -1,0 +1,55 @@
+{
+  "_note": "Site configuration. access.endpoint receives the landing-page email box; it feeds the same list as /waitlist (Admin → Waitlist).",
+  "access": {
+    "endpoint": "/api/waitlist",
+    "method": "POST",
+    "stubDelayMs": 700
+  },
+  "instagram": {
+    "brand": "",
+    "founder": ""
+  },
+  "hero": {
+    "framesPath": "assets/frames",
+    "mobileBreakpoint": 768,
+    "blockingFrames": 20,
+    "lerp": 0.1,
+    "beats": {
+      "_note": "Progress (0..1) ranges that drive the overlays. Tune to the footage.",
+      "intro": [
+        0.0,
+        0.12
+      ],
+      "line1": [
+        0.14,
+        0.38
+      ],
+      "release": [
+        0.4,
+        0.55
+      ],
+      "letterbox": [
+        0.55,
+        0.85
+      ],
+      "whiteout": [
+        0.9,
+        0.985
+      ],
+      "line2": [
+        0.6,
+        0.84
+      ]
+    }
+  },
+  "founder": {
+    "_note": "Set portrait to an image path (e.g. assets/founder/hzk.webp) once supplied. Empty = labelled placeholder.",
+    "portrait": ""
+  },
+  "packaging": {
+    "_note": "Set each to an image path once supplied (e.g. assets/packaging/box.webp). Empty = drawn, labelled placeholder.",
+    "box": "",
+    "tissue": "",
+    "patch": ""
+  }
+}

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en" class="is-loading">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ARSH BY HZK</title>
+  <meta name="description" content="ARSH BY HZK. Denim from Lahore, worn under the same sky.">
+  <meta name="theme-color" content="#0D0D0D">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preload" href="/assets/brand/wordmark.svg" as="image" type="image/svg+xml" crossorigin>
+  <link rel="preload" href="/assets/brand/andromeda-mark.svg" as="image" type="image/svg+xml" crossorigin>
+  <link rel="preload" href="/assets/fonts/BootzyCondensedTM-Regular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="/assets/fonts/fallback/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="data/copy.json" as="fetch" crossorigin>
+  <link rel="preload" href="data/config.json" as="fetch" crossorigin>
+  <link rel="preload" href="/api/shop" as="fetch" crossorigin>
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/shop.css">
+  <script>
+    // Pick the frame set before CSS/JS run so the right poster is requested first.
+    document.documentElement.classList.toggle('is-mobile', matchMedia('(max-width: 767px), (orientation: portrait) and (max-width: 1024px)').matches);
+    document.documentElement.classList.toggle('reduced-motion', matchMedia('(prefers-reduced-motion: reduce)').matches);
+  </script>
+</head>
+<body>
+  <a class="skip" href="#collection" data-copy="nav.collection">Collection</a>
+
+  <!-- Preloader: the wordmark is written across as the frames load -->
+  <div class="preloader" id="preloader" role="status" aria-live="polite">
+    <span class="lockup"><span class="wordmark" role="img" aria-label="Arsh"></span><span class="mark" aria-hidden="true"></span></span>
+    <span class="sr-only"><span data-copy="preloader.label">Loading</span></span>
+  </div>
+
+  <!-- Header: the Andromeda mark is the home link; the wordmark is kept for the large moments -->
+  <header class="header" id="header" data-theme="dark">
+    <a class="header__home" href="#top" aria-label="ARSH BY HZK, back to top"><span class="mark" aria-hidden="true"></span></a>
+    <nav class="header__nav" aria-label="Primary">
+      <a href="#collection" class="ui" data-copy="nav.collection">Collection</a>
+      <a href="/team" class="ui" data-copy="nav.team">Team</a>
+      <a href="#access" class="ui header__access" data-copy="nav.access">Request access</a>
+      <button type="button" class="ui header__bag" id="bag-toggle"><span data-copy="nav.bag">Bag</span> <span class="count"></span></button>
+      <button type="button" class="ui header__sound" id="sound-toggle" aria-pressed="false">
+        <span class="header__sound-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="header__sound-label" data-copy="nav.soundOff">Sound off</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- 1. Hero: scroll-scrubbed frame sequence -->
+    <section class="hero" id="hero" aria-label="Arsh — the descent">
+      <div class="hero__stage">
+        <canvas class="hero__canvas" id="hero-canvas" aria-hidden="true"></canvas>
+        <img class="hero__poster" id="hero-poster" alt="" aria-hidden="true" decoding="async">
+        <div class="hero__letterbox hero__letterbox--top" aria-hidden="true"></div>
+        <div class="hero__letterbox hero__letterbox--bottom" aria-hidden="true"></div>
+        <div class="hero__brand" id="hero-brand">
+          <h1 class="lockup"><span class="wordmark" role="img" aria-label="Arsh by HZK"></span><span class="mark" aria-hidden="true"></span></h1>
+        </div>
+        <p class="hero__line hero__line--1 display" data-copy="hero.line1"></p>
+        <p class="hero__line hero__line--2 display" data-copy="hero.line2"></p>
+        <div class="hero__cue ui" aria-hidden="true"><span data-copy="hero.cue">Scroll</span><i></i></div>
+        <div class="hero__whiteout" aria-hidden="true"></div>
+        <p class="sr-only" data-copy="hero.srSummary"></p>
+      </div>
+    </section>
+
+    <!-- 2. Manifesto -->
+    <section class="manifesto" id="manifesto" data-theme="light" aria-label="Manifesto">
+      <p class="manifesto__line display" data-lines="manifesto.lines"></p>
+    </section>
+
+    <!-- 3. Catalogue lineup -->
+    <section class="catalogue" id="collection" data-theme="light" aria-labelledby="catalogue-name">
+      <div class="catalogue__stage" id="catalogue-stage">
+        <div class="catalogue__label">
+          <p class="catalogue__index ui" id="catalogue-index" aria-hidden="true"></p>
+          <h2 class="catalogue__name heading" id="catalogue-name" aria-live="polite">Collection</h2>
+          <p class="catalogue__meta" id="catalogue-meta"></p>
+          <div class="catalogue__progress" aria-hidden="true"><span id="catalogue-progress"></span></div>
+        </div>
+        <ul class="catalogue__row" id="catalogue-row" role="list"></ul>
+        <p class="catalogue__hint ui" aria-hidden="true" data-copy="catalogue.hint">Scroll or drag</p>
+      </div>
+    </section>
+
+    <!-- 4. The Box -->
+    <section class="box" id="box" data-theme="dark" aria-labelledby="box-title">
+      <div class="box__stage">
+        <div class="box__intro">
+          <p class="eyebrow ui" data-copy="box.eyebrow">The Box</p>
+          <h2 class="box__title display" id="box-title" data-copy="box.title"></h2>
+        </div>
+        <div class="box__scene" id="box-scene" aria-hidden="true">
+          <div class="box__shadow"></div>
+          <div class="box__base">
+            <div class="box__tissue" data-pack="tissue">
+              <span class="box__fold"></span><span class="box__fold"></span><span class="box__fold"></span>
+            </div>
+          </div>
+          <div class="box__lid">
+            <div class="box__lid-out" data-pack="box"></div>
+            <div class="box__lid-in">
+              <span class="wordmark" role="img" aria-label="Arsh"></span>
+              <span class="box__line ui" data-copy="box.lidLine"></span>
+            </div>
+          </div>
+          <div class="box__patch" data-pack="patch"><span class="wordmark" role="img" aria-label="Arsh"></span></div>
+          <p class="box__ph ui">Placeholder — assets/packaging/</p>
+        </div>
+        <ol class="box__steps" id="box-steps"></ol>
+      </div>
+    </section>
+
+    <!-- 5. The Founder -->
+    <section class="founder" id="founder" data-theme="light" aria-labelledby="founder-name">
+      <div class="founder__grid">
+        <figure class="founder__portrait" id="founder-portrait">
+          <div class="founder__ph" aria-hidden="true">
+            <span class="founder__mono display">HZK</span>
+            <span class="ui">Portrait — assets/founder/</span>
+          </div>
+        </figure>
+        <div class="founder__text">
+          <p class="eyebrow ui" data-copy="founder.eyebrow">The Founder</p>
+          <h2 class="founder__name display" id="founder-name"><span data-copy="founder.name"></span> <span class="founder__handle" data-copy="founder.handle"></span></h2>
+          <p class="founder__place ui" data-copy="founder.place"></p>
+          <div class="founder__lines" id="founder-lines"></div>
+          <p class="founder__link ui" id="founder-link"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Request Access -->
+    <section class="access" id="access" data-theme="dark" aria-labelledby="access-title">
+      <div class="access__inner">
+        <p class="eyebrow ui" data-copy="access.eyebrow">Request access</p>
+        <h2 class="access__title display" id="access-title" data-copy="access.title"></h2>
+        <p class="access__text" data-copy="access.text"></p>
+        <form class="access__form" id="access-form" novalidate>
+          <label class="ui access__label" for="access-email" data-copy="access.label">Email address</label>
+          <div class="access__row">
+            <input class="access__input" id="access-email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="access-status" data-copy-attr="placeholder:access.placeholder">
+            <button class="access__submit ui" type="submit" data-copy="access.button">Request access</button>
+          </div>
+          <input type="hidden" name="interest" id="access-interest" value="">
+          <div class="access__hp" aria-hidden="true"><label>Leave empty <input type="text" name="company" tabindex="-1" autocomplete="off"></label></div>
+          <p class="access__status ui" id="access-status" role="status" aria-live="polite"></p>
+          <a class="access__more ui" id="access-more" href="/waitlist" hidden data-copy="access.more">Add your name and size</a>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" data-theme="dark">
+    <span class="footer__galaxy mark" aria-hidden="true"></span>
+    <div class="footer__sign">
+      <span class="lockup"><span class="wordmark" role="img" aria-label="Arsh by HZK"></span><span class="mark" aria-hidden="true"></span></span>
+      <p class="footer__tag ui" data-copy="footer.tag"></p>
+    </div>
+    <div class="footer__meta ui">
+      <ul role="list">
+        <li data-copy="footer.place">Lahore, Pakistan</li>
+        <li id="footer-instagram"></li>
+        <li><a href="/team" data-copy="nav.team">Team</a></li>
+        <li data-copy="footer.smallprint"></li>
+      </ul>
+      <p class="footer__sig" data-copy="footer.sign"></p>
+    </div>
+  </footer>
+
+  <!-- Catalogue detail panel -->
+  <dialog class="detail" id="detail" aria-labelledby="detail-name">
+    <div class="detail__inner">
+      <div class="detail__media"><img id="detail-img" alt="" width="600" height="1500"><ul class="detail__thumbs" id="detail-thumbs" role="list" hidden></ul></div>
+      <div class="detail__info">
+        <p class="ui detail__index" id="detail-index"></p>
+        <h2 class="detail__name display" id="detail-name"></h2>
+        <p class="detail__price ui" id="detail-price" hidden></p>
+        <p class="detail__desc" id="detail-desc"></p>
+        <dl class="detail__specs ui">
+          <div><dt data-copy="catalogue.detailFit">Fit</dt><dd id="detail-fit"></dd></div>
+          <div><dt data-copy="catalogue.detailFabric">Fabric</dt><dd id="detail-fabric"></dd></div>
+          <div><dt data-copy="catalogue.detailWash">Wash</dt><dd id="detail-wash"></dd></div>
+          <div><dt data-copy="catalogue.detailEdition">Edition</dt><dd id="detail-edition"></dd></div>
+        </dl>
+        <fieldset class="detail__sizes" id="detail-sizes-wrap" hidden>
+          <legend class="ui" data-copy="catalogue.size">Size</legend>
+          <div class="sizes" id="detail-sizes"></div>
+        </fieldset>
+        <details class="detail__size ui">
+          <summary data-copy="catalogue.sizeGuide">Size guide</summary>
+          <table>
+            <caption class="sr-only">Size guide</caption>
+            <thead><tr><th scope="col">Size</th><th scope="col">Waist</th><th scope="col">Inseam</th></tr></thead>
+            <tbody><tr><td>28</td><td>—</td><td>—</td></tr><tr><td>30</td><td>—</td><td>—</td></tr><tr><td>32</td><td>—</td><td>—</td></tr><tr><td>34</td><td>—</td><td>—</td></tr><tr><td>36</td><td>—</td><td>—</td></tr></tbody>
+          </table>
+          <p data-copy="catalogue.sizeGuideNote">Measurements to follow.</p>
+        </details>
+        <p class="detail__care" data-copy="catalogue.care"></p>
+        <button type="button" class="button" id="detail-add" data-copy="catalogue.add" hidden>Add to bag</button>
+        <button type="button" class="button" id="detail-request" data-copy="catalogue.request">Request access</button>
+        <p class="detail__status ui" id="detail-status" role="status" aria-live="polite"></p>
+      </div>
+      <button type="button" class="detail__close ui" id="detail-close"><span data-copy="catalogue.close">Close</span></button>
+    </div>
+  </dialog>
+
+  <div class="grain" aria-hidden="true"></div>
+
+  <script src="vendor/gsap.min.js" defer></script>
+  <script src="vendor/ScrollTrigger.min.js" defer></script>
+  <script src="vendor/lenis.min.js" defer></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+{
+  "_note": "Where the 9:16 phone crop looks, over time. [seconds, centre as a fraction of the 16:9 frame width: 0 = far left, 1 = far right]. Moves are eased between keyframes. Used by scripts/make-frames.sh when there is no hero-mobile.mp4; supply your own 9:16 cut and this is ignored.",
+  "keyframes": [[0, 0.38], [3.5, 0.2], [9, 0.19], [13, 0.3], [17, 0.42], [20, 0.45], [22, 0.55], [23, 0.63], [24, 0.67], [26, 0.7], [28, 0.68], [30, 0.67], [33, 0.66]]
+}

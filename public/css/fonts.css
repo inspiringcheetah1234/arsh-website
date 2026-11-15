@@ -1,0 +1,26 @@
+/*
+  Fonts. The brand uses four faces (Brand Guidelines, Typography):
+    Bootzy Condensed — H1, all caps          Bootzy — H2, sentence case
+    Mergo            — labels and details    Neue Montreal — body and information
+
+  IN USE: Bootzy Condensed and Bootzy (BootzyCondensedTM-Regular.otf, BootzyTM.otf in public/assets/fonts/).
+  STILL STAND-INS: Mergo (Space Grotesk) and Neue Montreal (Inter). To switch those on, drop the files into
+  public/assets/fonts/ (Mergo.woff2 / Mergo.otf, NeueMontreal-Medium.woff2 / .otf) and uncomment their blocks below.
+  The variables in css/brand.css already list the brand names first, so nothing else changes.
+  Licence note: both Bootzy files carry an OS/2 fsType of 4 (preview and print embedding). Confirm your licence
+  covers web use before launch.
+*/
+
+/* Brand faces in use. font-weight spans the range so a single Regular file is never faux-bolded. */
+@font-face { font-family: "Bootzy Condensed"; src: url("../assets/fonts/BootzyCondensedTM-Regular.otf") format("opentype"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Bootzy"; src: url("../assets/fonts/BootzyTM.otf") format("opentype"); font-weight: 100 900; font-style: normal; font-display: swap; }
+
+/* Not supplied yet: uncomment when the files are in public/assets/fonts/
+@font-face { font-family: "Mergo"; src: url("../assets/fonts/Mergo.woff2") format("woff2"); font-weight: 400 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Neue Montreal"; src: url("../assets/fonts/NeueMontreal-Medium.woff2") format("woff2"); font-weight: 400 700; font-style: normal; font-display: swap; }
+*/
+
+/* Stand-ins (SIL OFL, vendored). All three are variable fonts. */
+@font-face { font-family: "Archivo"; src: url("../assets/fonts/fallback/archivo-latin-wdth-normal.woff2") format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; font-style: normal; font-display: swap; }
+@font-face { font-family: "Space Grotesk"; src: url("../assets/fonts/fallback/space-grotesk-latin-wght-normal.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Inter"; src: url("../assets/fonts/fallback/inter-latin-wght-normal.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }

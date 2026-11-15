@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ARSH — Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0D0D0D">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/fonts.css">
+  <link rel="stylesheet" href="/css/brand.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <a class="skip" href="#view">Skip to content</a>
+  <div class="shell" id="shell" hidden>
+    <aside class="side">
+      <a class="side__mark" href="#/" aria-label="ARSH BY HZK admin, overview"><span class="wordmark" aria-hidden="true"></span><small>Admin</small></a>
+      <nav class="side__nav" aria-label="Admin">
+        <a href="#/" data-nav="dashboard">Overview</a>
+        <a href="#/orders" data-nav="orders">Orders</a>
+        <a href="#/scan" data-nav="scan">Scan</a>
+        <a href="#/products" data-nav="products">Products</a>
+        <a href="#/qr" data-nav="qr">QR codes</a>
+        <a href="#/waitlist" data-nav="waitlist">Waitlist</a>
+        <a href="#/settings" data-nav="settings">Settings</a>
+      </nav>
+      <div class="side__me"><span id="me"></span><button type="button" id="logout" class="link">Sign out</button></div>
+    </aside>
+    <main class="view" id="view" tabindex="-1"></main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/vendor/jsQR.js" defer></script>
+  <script type="module" src="/admin/admin.js"></script>
+</body>
+</html>
