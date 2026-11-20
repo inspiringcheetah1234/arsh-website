@@ -12,6 +12,9 @@ export const DEFAULTS = {
   siteUrl: '',                    // e.g. https://arsh.pk — used in QR codes and emails; falls back to SITE_URL env / request host
   ownerDisplay: 'first-initial',  // how the owner shows on a piece page: 'full' | 'first-initial' | 'first'
   notifyEmail: '',                // where new-order alerts go
+  launchAt: '',                   // ISO date-time the first collection opens; drives the countdown on /waitlist and in emails ('' = no countdown)
+  dataBankEmail: '',              // every waitlist signup is also emailed here, and the admin can email the full list here
+  dataBankAuto: true,             // copy each new signup to dataBankEmail automatically
 };
 
 export async function getSettings() {

@@ -20,6 +20,12 @@ html:has(.waitlist-page) { background: var(--blue); }
 .waitlist__title { font-size: clamp(4.5rem, 11vw, 10rem); color: var(--cream); max-width: 8ch; }
 .waitlist__lede { margin-top: 1.5rem; max-width: 26rem; color: var(--space); font-size: 1.0625rem; }
 .waitlist__tag { color: var(--space); }
+.countdown { margin-top: 2rem; max-width: 26rem; }
+.countdown__label { color: var(--space); margin-bottom: 0.75rem; }
+.countdown__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; }
+.countdown__grid > div { display: grid; gap: 0.25rem; }
+.countdown__grid b { font-family: var(--font-display, "Bootzy Condensed", sans-serif); font-weight: 400; font-size: clamp(2.75rem, 6vw, 4.5rem); line-height: 0.9; color: var(--cream); font-variant-numeric: tabular-nums; }
+.countdown__grid span { font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--space); }
 
 /* ---------------------------------------------------------------- Panel: blue, one stage, envelope and letter stacked */
 .waitlist__panel { background: var(--blue); color: var(--cream); padding: clamp(4.5rem, 11vh, 7rem) var(--gutter) 4rem; display: grid; align-content: center; justify-items: center; }

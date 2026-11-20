@@ -112,9 +112,9 @@
   },
   "waitlist": {
     "pageTitle": "Waitlist — ARSH BY HZK",
-    "eyebrow": "Request access",
+    "eyebrow": "The first collection",
     "title": "Opens by invitation.",
-    "lede": "The first collection opens by invitation. Leave your details and we write once, when it opens.",
+    "lede": "Pakistan's first luxury denim house, from Lahore. Join the waitlist: we send your number and the countdown to your inbox, and write again when it opens.",
     "tag": "Authentic Denim Co. — Lahore, Pakistan",
     "name": "Name",
     "email": "Email address",
@@ -131,20 +131,25 @@
       "HZK",
       "Something else"
     ],
-    "consent": "Write to me when the first collection opens.",
+    "consent": "Write to me with the countdown and when the first collection opens.",
     "button": "Join the waitlist",
     "sending": "Sending",
     "required": "Please complete the highlighted fields.",
     "invalidEmail": "Please enter a valid email address.",
     "invalidPhone": "Please enter a valid phone number, or leave it empty.",
     "consentMissing": "Please tick the box so we know we may write to you.",
-    "already": "You are already on the list. We write once, when it opens.",
+    "already": "You are already on the list. Check your inbox for your number and the countdown.",
     "error": "Something went wrong. Please try again.",
     "ticketLabel": "Waitlist",
-    "ticketNote": "We will write to {email} when it opens.",
-    "back": "Back to the site",
+    "ticketNote": "Your number and the countdown are on their way to {email}.",
     "hint": "Break the seal",
     "letterTitle": "Request access",
-    "sealLabel": "Break the wax seal to open the envelope"
+    "sealLabel": "Break the wax seal to open the envelope",
+    "countdownLabel": "Until the first collection opens",
+    "countdownOpen": "The first collection is open.",
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds"
   }
 }

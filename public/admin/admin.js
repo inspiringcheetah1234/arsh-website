@@ -464,13 +464,18 @@ async function viewSettings() {
   const siteUrl = h('input', { value: s.siteUrl, placeholder: location.origin });
   const ownerDisplay = h('select', {}, [['first-initial', 'First name + initial (Hammad Z.)'], ['first', 'First name only'], ['full', 'Full name']].map(([v, l]) => h('option', { value: v, selected: v === s.ownerDisplay }, l)));
   const notify = h('input', { type: 'email', value: s.notifyEmail, placeholder: 'orders@…' });
+  const localInput = (iso) => { if (!iso) return ''; const d = new Date(iso); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 16); };
+  const launchAt = h('input', { type: 'datetime-local', value: localInput(s.launchAt) });
+  const dataBank = h('input', { type: 'email', value: s.dataBankEmail, placeholder: 'databank@…' });
+  const dataBankAuto = h('input', { type: 'checkbox', checked: s.dataBankAuto });
   const save = async (e) => {
     e.preventDefault();
     try {
       await api('/api/admin/settings', { method: 'PATCH', body: {
         shopOpen: shopOpen.checked, shippingFlat: Number(shipping.value), freeShippingOver: Number(free.value),
         paymentMethods: [cod.checked && 'cod', bank.checked && 'bank'].filter(Boolean), bankDetails: bankDetails.value,
-        siteUrl: siteUrl.value.trim(), ownerDisplay: ownerDisplay.value, notifyEmail: notify.value.trim() } });
+        siteUrl: siteUrl.value.trim(), ownerDisplay: ownerDisplay.value, notifyEmail: notify.value.trim(),
+        launchAt: launchAt.value ? new Date(launchAt.value).toISOString() : '', dataBankEmail: dataBank.value.trim(), dataBankAuto: dataBankAuto.checked } });
       toast('Settings saved');
     } catch (err) { fail(err); }
   };
@@ -492,6 +497,10 @@ async function viewSettings() {
       h('label', { class: 'f' }, 'Site URL (inside QR codes and emails)', siteUrl),
       h('label', { class: 'f' }, 'Owner name on piece pages', ownerDisplay),
       h('label', { class: 'f' }, 'New-order alerts to', notify),
+      h('h2', { style: 'margin:1rem 0 0' }, 'Waitlist'),
+      h('label', { class: 'f' }, 'Opening date and time (drives the countdown on /waitlist and in emails; empty = no countdown)', launchAt),
+      h('label', { class: 'f' }, 'Data bank email (every waitlist signup is copied here)', dataBank),
+      h('label', { class: 'check' }, dataBankAuto, 'Copy each new signup to the data bank automatically'),
       owner ? h('button', { class: 'btn', type: 'submit' }, 'Save settings') : h('p', { class: 'muted' }, 'Only the owner can change settings.')),
     h('div', { class: 'stack' },
       h('section', { class: 'card' }, h('h2', {}, 'Team'),

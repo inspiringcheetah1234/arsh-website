@@ -73,6 +73,13 @@ Until the shop opens (Admin → Settings → "Shop open" off), and for anything 
 - **Admin → Waitlist** shows everyone with filters (waiting, invited, removed), search, a note and status per person, and a "customer" badge when the email has placed an order. Tick people and **Invite selected** to email them that the collection is open. Only people who are *waiting* can be invited, and nobody is invited twice. **Export CSV** gives the list for Klaviyo, WhatsApp broadcasts or a spreadsheet; cells that start with `=`, `+`, `-` or `@` are neutralised so a spreadsheet never runs them as formulas. **Delete** removes a person for good, for "please remove me" requests.
 - **Safeguards:** the same email can't be on the list twice (any capitalisation), and signing up again never overwrites what someone already gave. A hidden trap field catches bots, and signups are rate-limited per address. Names are always shown as plain text. Emails go through Resend when `RESEND_API_KEY` is set; otherwise they appear in Settings → Email log.
 
+### Pre-launch: gate, countdown emails, data bank
+- **Gate.** `vercel.json` → `redirects` sends `/`, `/checkout`, `/order` and `/team` to `/waitlist` unless the visitor has the `arsh_preview` cookie. Piece pages (`/p/CODE`, the QR codes), `/admin` and the API stay open. The owner gets the cookie by opening `/api/preview?key=<PREVIEW_KEY>`. **To launch: delete the `redirects` block from `vercel.json` and push.** It only hides the site; it is not access control. Locally, `SITE_GATE=1 npm run dev` applies it too.
+- **Countdown.** Admin → Settings → Waitlist → opening date. It drives the live countdown on `/waitlist` and in the emails. Empty = no countdown.
+- **Emails.** Every signup gets a branded confirmation with its number and the time left. A daily Vercel Cron (`/api/cron/reminders`, needs `CRON_SECRET`) sends one reminder at 7 days, one at 1 day and one when it opens, each at most once per person, and never for a threshold that passed before they joined. Without `RESEND_API_KEY` and `EMAIL_FROM` (a verified domain) emails are only logged, not sent (Admin → Settings → Email log).
+- **Data bank.** Settings → Data bank email: each new signup is copied there, and Admin → Waitlist → "Email list to data bank" sends the whole list as a CSV.
+- **Admin password reset.** Change `ADMIN_PASSWORD` in the environment and redeploy.
+
 ## Team page
 
 `/team` puts every person on one page: a reel you scroll through sideways, one card each (portrait, name, role, "Part of the company since", specialisation, stitch colour), then an "All of us" grid. Clicking someone in the grid jumps to their card, and the arrow keys step through the reel. With reduced motion it becomes a plain swipeable strip.

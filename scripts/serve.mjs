@@ -8,9 +8,10 @@ import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { handle } from '../server/api.js';
-import { db, one, q } from '../server/db.js';
-import { hashPassword, verifyPassword } from '../server/auth.js';
+import { db } from '../server/db.js';
 import { seedCatalogue } from '../server/cli.js';
+import { GATED, GATE_TARGET, PREVIEW_COOKIE } from '../server/gate.js';
+import { parseCookies } from '../server/http.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const PORT = Number(process.argv[2] || process.env.PORT || 4173);
@@ -27,19 +28,7 @@ async function bootstrap() {
   await db();
   const n = await seedCatalogue();
   if (n) console.log(`seeded ${n} placeholder products`);
-  // Dev only: the owner in .env always works locally (created, or its password re-synced, on every start).
-  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD;
-  if (email && password) {
-    const existing = await one('SELECT id, password_hash FROM admins WHERE lower(email) = $1', [email]);
-    if (!existing) {
-      await q('INSERT INTO admins (email, name, password_hash, role) VALUES ($1, $2, $3, $4)', [email, 'Owner', await hashPassword(password), 'owner']);
-      console.log(`created owner account ${email} (password in .env)`);
-    } else if (!(await verifyPassword(password, existing.password_hash))) {
-      await q("UPDATE admins SET password_hash = $2, role = 'owner' WHERE id = $1", [existing.id, await hashPassword(password)]);
-      console.log(`updated password for ${email} from .env`);
-    }
-  }
+  // The owner in .env always works locally (db.js syncs it on connect).
 }
 
 async function file(res, path) {
@@ -61,6 +50,10 @@ await bootstrap();
 createServer(async (req, res) => {
   const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   if (path === '/api' || path.startsWith('/api/')) return handle(req, res);
+  if (process.env.SITE_GATE === '1' && GATED.includes(path.replace(/(.)\/$/, '$1')) && !parseCookies(req)[PREVIEW_COOKIE]) {
+    res.writeHead(307, { Location: GATE_TARGET, 'Cache-Control': 'no-store' }).end();
+    return;
+  }
   const rw = REWRITES.find(([re]) => re.test(path));
   const candidates = rw ? [rw[1]] : path.endsWith('/') ? [path + 'index.html'] : [path, path + '.html'];
   for (const c of candidates) if (await file(res, c)) return;

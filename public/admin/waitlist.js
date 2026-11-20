@@ -19,6 +19,15 @@ export async function viewWaitlist(ctx, qs) {
     inviteBtn.disabled = selected.size === 0;
     inviteBtn.textContent = selected.size ? `Invite selected (${selected.size})` : 'Invite selected';
   };
+  const bankBtn = h('button', { class: 'btn btn--ghost', type: 'button' }, 'Email list to data bank');
+  bankBtn.addEventListener('click', async () => {
+    if (!confirm('Email the full waitlist as a CSV to the data bank address set in Settings?')) return;
+    bankBtn.disabled = true;
+    try {
+      const r = await api('/api/admin/waitlist/databank', { method: 'POST' });
+      toast(r.status === 'sent' ? `Sent ${r.count} entries to ${r.to}` : r.status === 'logged' ? `Not sent: email is not configured yet (saved in the email log)` : `Email ${r.status}`);
+    } catch (err) { fail(err); } finally { bankBtn.disabled = false; }
+  });
   inviteBtn.addEventListener('click', async () => {
     const n = selected.size;
     if (!n || !confirm(`Send the invitation email to ${n} ${n === 1 ? 'person' : 'people'}? They are marked as invited.`)) return;
@@ -111,7 +120,7 @@ export async function viewWaitlist(ctx, qs) {
   const kpi = (label, value) => h('div', { class: 'kpi' }, h('span', { class: 'ui muted' }, label), h('b', {}, value));
 
   page('Waitlist',
-    [h('a', { class: 'btn btn--ghost', href: `/api/admin/waitlist/export?status=${encodeURIComponent(status)}` }, 'Export CSV'), inviteBtn],
+    [h('a', { class: 'btn btn--ghost', href: `/api/admin/waitlist/export?status=${encodeURIComponent(status)}` }, 'Export CSV'), bankBtn, inviteBtn],
     h('div', { class: 'kpis' }, kpi('Waiting', d.counts.waiting), kpi('Invited', d.counts.invited), kpi('Last 7 days', d.counts.last7), kpi('Total', d.counts.total)),
     h('div', { class: 'row', style: 'justify-content:space-between;margin-bottom:.5rem' }, tabs, search),
     table,

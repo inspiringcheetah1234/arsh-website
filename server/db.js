@@ -60,6 +60,8 @@ export function db() {
       const conn = await connect();
       const schema = await readFile(join(ROOT, 'server', 'schema.sql'), 'utf8');
       await conn.exec(schema);
+      ready = Promise.resolve(conn); // the owner sync below queries through db(), so it must see the finished connection
+      try { const { syncOwnerFromEnv } = await import('./bootstrap.js'); await syncOwnerFromEnv(); } catch (err) { console.error('[bootstrap]', err.message); }
       return conn;
     })().catch((err) => { ready = null; throw err; });
   }

@@ -4,6 +4,9 @@ import { Router, HttpError, send, readBody, bad, str, int, EMAIL } from './http.
 import { all, one, q } from './db.js';
 import { requireAdmin, currentAdmin, verifyPassword, hashPassword, sessionCookie, clearCookie, throttle, clearThrottle } from './auth.js';
 import { getSettings, saveSettings, siteUrl, DEFAULTS } from './settings.js';
+import { PREVIEW_COOKIE } from './gate.js';
+import { timingSafeEqual } from 'node:crypto';
+import { runReminders } from './reminders.js';
 import { listProducts, publicProduct, createProduct, updateProduct } from './products.js';
 import { createOrder, lookupOrder, adminOrder, listOrders, updateOrder, dashboard, orderToken } from './orders.js';
 import {
@@ -12,7 +15,7 @@ import {
 } from './pieces.js';
 import { readRaw, uploadImage, updateImage, reorderImages, deleteImage, listImages } from './images.js';
 import { storageKind } from './storage.js';
-import { sendEmail, orderConfirmation, orderShipped, newOrderAlert, waitlistWelcome, waitlistInvite, waitlistAlert } from './email.js';
+import { sendEmail, orderConfirmation, orderShipped, newOrderAlert, waitlistWelcome, waitlistInvite, waitlistAlert, waitlistDataBank, waitlistDataBankExport } from './email.js';
 import { joinWaitlist, listWaitlist, updateEntry, deleteEntry, inviteEntries, waitlistCsv } from './waitlist.js';
 
 const r = new Router();
@@ -56,12 +59,36 @@ const joinHandler = async (req) => {
   if (!result.created) return { ok: true, status: 'already' };
   const settings = await getSettings();
   const base = siteUrl(settings, req);
-  await sendEmail(waitlistWelcome(result.entry));
+  await sendEmail(waitlistWelcome(result.entry, { launchAt: settings.launchAt, base }));
   if (settings.notifyEmail) await sendEmail(waitlistAlert(result.entry, settings.notifyEmail, base));
+  if (settings.dataBankEmail && settings.dataBankAuto) await sendEmail(waitlistDataBank(result.entry, settings.dataBankEmail));
   return { ok: true, status: 'joined', number: result.entry.number, name: result.entry.name };
 };
 r.post('/api/waitlist', joinHandler);
 r.post('/api/access', joinHandler);
+
+// Launch time for the live countdown on /waitlist (server time included so a wrong clock on the visitor's device does not matter).
+r.get('/api/launch', async () => ({ launchAt: (await getSettings()).launchAt || null, now: Date.now() }));
+
+// Pre-launch preview: /api/preview?key=<PREVIEW_KEY> lets the owner past the waitlist gate (see server/gate.js).
+r.get('/api/preview', async (req, { query }) => {
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || '';
+  throttle(`preview|${ip}`, 10);
+  const want = Buffer.from(process.env.PREVIEW_KEY || '');
+  const got = Buffer.from(query.get('key') || '');
+  if (want.length < 8 || got.length !== want.length || !timingSafeEqual(want, got)) throw new HttpError(404, 'Not found');
+  const secure = process.env.VERCEL || process.env.NODE_ENV === 'production' ? '; Secure' : '';
+  return { __redirect: '/', __headers: { 'Set-Cookie': `${PREVIEW_COOKIE}=1; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000${secure}` } };
+});
+
+// Daily countdown reminders (Vercel Cron sends "Authorization: Bearer $CRON_SECRET").
+r.get('/api/cron/reminders', async (req) => {
+  const secret = process.env.CRON_SECRET;
+  const want = Buffer.from(`Bearer ${secret || ''}`), got = Buffer.from(req.headers.authorization || '');
+  if (!secret || got.length !== want.length || !timingSafeEqual(want, got)) throw new HttpError(401, 'Unauthorized');
+  const settings = await getSettings();
+  return runReminders({ launchAt: settings.launchAt, base: siteUrl(settings, req) });
+});
 
 // ------------------------------------------------------------------ admin auth
 r.post('/api/admin/login', async (req) => {
@@ -174,6 +201,16 @@ r.patch('/api/admin/settings', admin(async (req, { admin: a }) => {
     patch.notifyEmail = str(b.notifyEmail, { max: 200 });
     if (patch.notifyEmail && !EMAIL.test(patch.notifyEmail)) throw bad('Notification email is not valid');
   }
+  if (b.launchAt !== undefined) {
+    const v = str(b.launchAt, { max: 40 });
+    if (v && !Number.isFinite(Date.parse(v))) throw bad('Launch date is not valid');
+    patch.launchAt = v ? new Date(v).toISOString() : '';
+  }
+  if (b.dataBankEmail !== undefined) {
+    patch.dataBankEmail = str(b.dataBankEmail, { max: 200 });
+    if (patch.dataBankEmail && !EMAIL.test(patch.dataBankEmail)) throw bad('Data bank email is not valid');
+  }
+  if (b.dataBankAuto !== undefined) patch.dataBankAuto = !!b.dataBankAuto;
   return { settings: await saveSettings(patch) };
 }));
 r.get('/api/admin/emails', admin(async () => ({ emails: await all('SELECT * FROM email_log ORDER BY id DESC LIMIT 100') })));
@@ -181,6 +218,14 @@ r.get('/api/admin/waitlist', admin(async (req, { query }) =>
   listWaitlist({ status: query.get('status'), search: query.get('q')?.trim(), page: Number(query.get('page')) || 1 })));
 r.get('/api/admin/waitlist/export', admin(async (req, { query }) =>
   raw(await waitlistCsv(query.get('status')), 'text/csv; charset=utf-8', { 'Content-Disposition': 'attachment; filename="arsh-waitlist.csv"' })));
+r.post('/api/admin/waitlist/databank', admin(async () => {
+  const { dataBankEmail } = await getSettings();
+  if (!dataBankEmail) throw bad('Set the data bank email in Settings first');
+  const csv = await waitlistCsv('');
+  const count = Math.max(0, csv.trim().split('\n').length - 1);
+  const status = await sendEmail(waitlistDataBankExport(csv, count, dataBankEmail));
+  return { to: dataBankEmail, count, status };
+}));
 r.post('/api/admin/waitlist/invite', admin(async (req) => {
   const { invited, skipped } = await inviteEntries((await readBody(req)).ids);
   const base = siteUrl(await getSettings(), req);
@@ -222,6 +267,14 @@ export async function handle(req, res) {
       res.setHeader('Cache-Control', 'no-store');
       for (const [k, v] of Object.entries(out.headers)) res.setHeader(k, v);
       res.end(out.body);
+      return;
+    }
+    if (out?.__redirect) {
+      res.statusCode = 302;
+      res.setHeader('Location', out.__redirect);
+      res.setHeader('Cache-Control', 'no-store');
+      for (const [k, v] of Object.entries(out.__headers || {})) res.setHeader(k, v);
+      res.end();
       return;
     }
     const headers = out?.__headers || {};

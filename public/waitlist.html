@@ -29,7 +29,7 @@
   </svg>
 
   <header class="header" data-theme="dark">
-    <a class="header__home" href="/" aria-label="ARSH BY HZK, home"><span class="mark" aria-hidden="true"></span></a>
+    <a class="header__home" href="/waitlist" aria-label="ARSH BY HZK"><span class="mark" aria-hidden="true"></span></a>
   </header>
 
   <main class="waitlist" id="main">
@@ -42,6 +42,15 @@
         <p class="eyebrow ui" data-copy="waitlist.eyebrow">Request access</p>
         <h1 class="waitlist__title display" id="wl-title" data-copy="waitlist.title">Opens by invitation.</h1>
         <p class="waitlist__lede" data-copy="waitlist.lede"></p>
+        <div class="countdown" id="countdown" hidden>
+          <p class="countdown__label ui" id="cd-label" data-copy="waitlist.countdownLabel"></p>
+          <div class="countdown__grid" role="timer" aria-labelledby="cd-label">
+            <div><b id="cd-d">00</b><span data-copy="waitlist.days">Days</span></div>
+            <div><b id="cd-h">00</b><span data-copy="waitlist.hours">Hours</span></div>
+            <div><b id="cd-m">00</b><span data-copy="waitlist.minutes">Minutes</span></div>
+            <div><b id="cd-s">00</b><span data-copy="waitlist.seconds">Seconds</span></div>
+          </div>
+        </div>
       </div>
       <p class="waitlist__tag ui" data-copy="waitlist.tag"></p>
     </section>
@@ -90,7 +99,6 @@
           <label class="consent"><input type="checkbox" name="consent" id="wl-consent" required><span data-copy="waitlist.consent"></span></label>
           <button class="button" type="submit" id="wl-submit" data-copy="waitlist.button">Join the waitlist</button>
           <p class="form-status ui" id="wl-status" role="status" aria-live="polite"></p>
-          <p class="waitlist__back ui"><a href="/" data-copy="waitlist.back">Back to the site</a></p>
         </form>
 
         <div class="waitlist__done" id="wl-done" hidden></div>

@@ -176,3 +176,11 @@ INSERT INTO waitlist (email, source, created_at)
 SELECT lower(a.email), 'landing', a.created_at
 FROM (SELECT DISTINCT ON (lower(email)) email, created_at FROM access_requests ORDER BY lower(email), created_at) a
 WHERE NOT EXISTS (SELECT 1 FROM waitlist w WHERE lower(w.email) = lower(a.email));
+
+-- Which scheduled waitlist emails (countdown reminders) each person has already received.
+CREATE TABLE IF NOT EXISTS email_events (
+  waitlist_id INTEGER NOT NULL REFERENCES waitlist(id) ON DELETE CASCADE,
+  kind        TEXT NOT NULL,
+  sent_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (waitlist_id, kind)
+);

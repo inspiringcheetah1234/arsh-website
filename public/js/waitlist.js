@@ -48,6 +48,28 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
   initEnvelope({ stage: $('#wl-stage'), envelope: $('#envelope'), seal: $('#seal'), form, auto: Boolean(params.get('email') || wanted) });
 }
 
+// Live countdown to the opening (server time, so a wrong clock on the device does not matter).
+try {
+  const { launchAt, now } = await api('/api/launch');
+  const target = Date.parse(launchAt || '');
+  if (target) {
+    const skew = now - Date.now();
+    const box = $('#countdown');
+    const two = (n) => String(n).padStart(2, '0');
+    const tick = () => {
+      const ms = target - (Date.now() + skew);
+      if (ms <= 0) { box.querySelector('.countdown__grid').hidden = true; $('#cd-label').textContent = t.countdownOpen; return false; }
+      $('#cd-d').textContent = two(Math.floor(ms / 864e5));
+      $('#cd-h').textContent = two(Math.floor((ms % 864e5) / 36e5));
+      $('#cd-m').textContent = two(Math.floor((ms % 36e5) / 6e4));
+      $('#cd-s').textContent = two(Math.floor((ms % 6e4) / 1e3));
+      return true;
+    };
+    box.hidden = false;
+    if (tick()) setInterval(tick, 1000);
+  }
+} catch { /* no countdown shown */ }
+
 const setStatus = (state, text) => { status.dataset.state = state; status.textContent = text; };
 const pad = (n) => String(n).padStart(4, '0');
 const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
@@ -81,10 +103,7 @@ function ticket(res, values) {
   const ticketEl = el('article', 'ticket');
   ticketEl.append(stub, main);
   const note = el('p', 'waitlist__note', t.ticketNote.replace('{email}', values.email));
-  const back = el('p', 'waitlist__back ui');
-  const a = el('a', null, t.back); a.href = '/';
-  back.append(a);
-  done.replaceChildren(ticketEl, note, back);
+  done.replaceChildren(ticketEl, note);
   done.hidden = false;
   form.hidden = true;
   $('#wl-panel').classList.add('is-done');

@@ -10,7 +10,7 @@
     "db:migrate": "node server/cli.js migrate",
     "db:seed": "node server/cli.js seed",
     "admin:create": "node server/cli.js admin:create",
-    "test": "node scripts/test.mjs && node scripts/test-shop.mjs && node scripts/test-images.mjs && node scripts/test-waitlist.mjs && node scripts/test-team.mjs && node scripts/test-brand.mjs"
+    "test": "node scripts/test.mjs && node scripts/test-shop.mjs && node scripts/test-images.mjs && node scripts/test-waitlist.mjs && node scripts/test-team.mjs && node scripts/test-brand.mjs && node scripts/test-launch.mjs"
   },
   "dependencies": {
     "@vercel/blob": "2.8.2",
