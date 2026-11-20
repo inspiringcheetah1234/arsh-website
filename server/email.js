@@ -1,23 +1,50 @@
-// Transactional email. With RESEND_API_KEY set, sends through Resend; otherwise it only records to email_log
-// (visible in the admin under Settings → Email log), so nothing leaves the machine in development.
+// Transactional email. Sends through SMTP (SMTP_USER + SMTP_PASS, e.g. a Google Workspace mailbox) or Resend (RESEND_API_KEY);
+// with neither set it only records to email_log (admin → Settings → Email log), so nothing leaves the machine in development.
 
 import { q } from './db.js';
 
 const money = (n, c = 'PKR') => `${c} ${Number(n).toLocaleString('en-PK')}`;
 
+let smtp = null;
+async function smtpTransport() {
+  if (smtp) return smtp;
+  const { default: nodemailer } = await import('nodemailer');
+  smtp = process.env.SMTP_HOST === 'json' // tests only: build the message, send nothing
+    ? nodemailer.createTransport({ jsonTransport: true })
+    : nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com', port: Number(process.env.SMTP_PORT || 465), secure: Number(process.env.SMTP_PORT || 465) === 465,
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    });
+  return smtp;
+}
+
+// Sends through (1) SMTP, e.g. a Google Workspace mailbox, when SMTP_USER + SMTP_PASS are set, else (2) Resend when RESEND_API_KEY is set,
+// else only records the message in email_log.
 export async function sendEmail({ to, subject, text, html, attachments }) {
   let status = 'logged';
-  const key = process.env.RESEND_API_KEY;
-  if (key && to) {
+  const from = process.env.EMAIL_FROM || (process.env.SMTP_USER ? `ARSH BY HZK <${process.env.SMTP_USER}>` : 'ARSH BY HZK <orders@example.com>');
+  if (to && ((process.env.SMTP_USER && process.env.SMTP_PASS) || process.env.SMTP_HOST === 'json')) {
     try {
-      const res = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from: process.env.EMAIL_FROM || 'ARSH BY HZK <orders@example.com>', to: [to], subject, text, ...(html ? { html } : {}), ...(attachments ? { attachments } : {}) }),
-      });
-      status = res.ok ? 'sent' : `failed ${res.status}`;
+      const t = await smtpTransport();
+      await t.sendMail({ from, to, subject, text, ...(html ? { html } : {}),
+        ...(attachments ? { attachments: attachments.map((a) => ({ filename: a.filename, content: a.content, encoding: 'base64' })) } : {}) });
+      status = 'sent';
     } catch (err) {
       status = `failed ${err.message}`.slice(0, 120);
+    }
+  } else {
+    const key = process.env.RESEND_API_KEY;
+    if (key && to) {
+      try {
+        const res = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from, to: [to], subject, text, ...(html ? { html } : {}), ...(attachments ? { attachments } : {}) }),
+        });
+        status = res.ok ? 'sent' : `failed ${res.status}`;
+      } catch (err) {
+        status = `failed ${err.message}`.slice(0, 120);
+      }
     }
   }
   await q('INSERT INTO email_log (recipient, subject, body, status) VALUES ($1, $2, $3, $4)', [to || '', subject, text, status]).catch(() => {});

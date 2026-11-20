@@ -122,6 +122,15 @@ const r = await fetch(open.base + '/', { redirect: 'manual' });
 ok('no gate without SITE_GATE: main site opens', r.status === 200, r.status);
 await stop(open);
 
+// ---- SMTP path builds the message (jsonTransport: nothing is sent)
+process.env.SMTP_HOST = 'json'; process.env.EMAIL_FROM = 'ARSH BY HZK <studio@arsh.ltd>';
+const { sendEmail } = await import('../server/email.js');
+const { db } = await import('../server/db.js');
+process.env.PGLITE_DIR = mkdtempSync(join(tmpdir(), 'arsh-smtp-'));
+await db();
+const st = await sendEmail({ to: 'x@test.local', subject: 'hi', text: 'hello', html: '<p>hello</p>', attachments: [{ filename: 'a.csv', content: Buffer.from('a,b').toString('base64') }] });
+ok('smtp: message is built and reported as sent', st === 'sent', st);
+
 console.log(JSON.stringify({ results }, null, 2));
 const failed = results.filter((x) => !x.pass);
 console.log(`\n${results.length - failed.length}/${results.length} passed`);
