@@ -1,0 +1,33 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+[TypeError: fetch failed] {
+  [cause]: AggregateError [ECONNREFUSED]: 
+      at internalConnectMultiple (node:net:1426:18)
+      at afterConnectMultiple (node:net:2095:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [
+      Error: connect ECONNREFUSED ::1:4180
+          at createConnectionError (node:net:2058:14)
+          at afterConnectMultiple (node:net:2088:16) {
+        errno: -61,
+        code: 'ECONNREFUSED',
+        syscall: 'connect',
+        address: '::1',
+        port: 4180
+      },
+      Error: connect ECONNREFUSED 127.0.0.1:4180
+          at createConnectionError (node:net:2058:14)
+          at afterConnectMultiple (node:net:2088:16) {
+        errno: -61,
+        code: 'ECONNREFUSED',
+        syscall: 'connect',
+        address: '127.0.0.1',
+        port: 4180
+      }
+    ]
+  }
+}
+
+Node.js v26.7.0

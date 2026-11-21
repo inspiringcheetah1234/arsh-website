@@ -216,7 +216,7 @@ ok('invited people are marked invited, with a date', inv.length >= 2 && inv.ever
 ok('the waiting filter no longer lists them', await page.evaluate(() => /Nobody matches/.test(document.querySelector('.view').textContent)));
 const emails = await page.evaluate(async () => (await (await fetch('/api/admin/emails')).json()).emails.map((e) => e.subject));
 ok('invitation emails were sent (logged)', emails.some((s) => /first collection is open/.test(s)));
-ok('welcome emails were sent (logged)', emails.some((s) => /you are No\. \d{4}/.test(s)));
+ok('welcome emails were sent (logged)', emails.some((s) => /^An invitation to the unchosen/.test(s)));
 const re = await page.evaluate(async (ids) => (await fetch('/api/admin/waitlist/invite', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Arsh-Admin': '1' }, body: JSON.stringify({ ids }) })).json(), await page.evaluate(async () => (await (await fetch('/api/admin/waitlist?status=invited')).json()).entries.map((e) => e.id)));
 ok('inviting someone twice is skipped, not repeated', re.invited === 0 && re.skipped > 0);
 

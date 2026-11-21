@@ -17,9 +17,14 @@ initGrain();
 const copy = (await (await fetch('/data/copy.json')).json());
 const t = copy.waitlist;
 document.title = t.pageTitle;
+
+// The opening time comes from the server (Admin → Settings → Waitlist), and so does the {date} in the text.
+let launch = null;
+try { const r = await api('/api/launch'); if (Date.parse(r.launchAt || '')) launch = { target: Date.parse(r.launchAt), skew: r.now - Date.now() }; } catch { /* no countdown */ }
+const dateText = launch ? new Date(launch.target).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'Asia/Karachi' }) : 'launch day';
 for (const el of document.querySelectorAll('[data-copy]')) {
   const v = el.dataset.copy.split('.').reduce((o, k) => o?.[k], copy);
-  if (typeof v === 'string') el.textContent = v;
+  if (typeof v === 'string') el.textContent = v.replace('{date}', dateText);
 }
 
 for (const el of document.querySelectorAll('[data-copy-attr]')) {
@@ -50,10 +55,8 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
 
 // Live countdown to the opening (server time, so a wrong clock on the device does not matter).
 try {
-  const { launchAt, now } = await api('/api/launch');
-  const target = Date.parse(launchAt || '');
-  if (target) {
-    const skew = now - Date.now();
+  if (launch) {
+    const { target, skew } = launch;
     const box = $('#countdown');
     const two = (n) => String(n).padStart(2, '0');
     const tick = () => {
@@ -65,6 +68,7 @@ try {
       $('#cd-s').textContent = two(Math.floor((ms % 6e4) / 1e3));
       return true;
     };
+    $('#cd-label').textContent = `${t.countdownLabel} · ${new Date(target).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Karachi' })}`;
     box.hidden = false;
     if (tick()) setInterval(tick, 1000);
   }
@@ -83,7 +87,7 @@ function ticket(res, values) {
 
   const main = el('div', 'ticket__main');
   const top = el('div', 'ticket__top');
-  const word = el('span', 'wordmark'); word.setAttribute('role', 'img'); word.setAttribute('aria-label', 'Arsh by HZK');
+  const word = el('span', 'wordmark'); word.setAttribute('role', 'img'); word.setAttribute('aria-label', 'Arsh');
   const mark = el('span', 'mark'); mark.setAttribute('aria-hidden', 'true');
   top.append(word, mark);
   const number = el('h2', 'ticket__number display', `No. ${pad(res.number)}`);
@@ -107,7 +111,7 @@ function ticket(res, values) {
   done.hidden = false;
   form.hidden = true;
   $('#wl-panel').classList.add('is-done');
-  document.title = `No. ${pad(res.number)} — ARSH BY HZK`;
+  document.title = `No. ${pad(res.number)} — ARSH`;
   number.focus({ preventScroll: true });
   done.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }

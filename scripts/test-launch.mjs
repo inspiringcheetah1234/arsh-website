@@ -47,7 +47,7 @@ try {
 
   // ---- /api/launch + admin settings
   let l = await json('/api/launch');
-  ok('launch: no date set yet', l.r.status === 200 && l.b.launchAt === null && typeof l.b.now === 'number', JSON.stringify(l.b));
+  ok('launch: defaults to 15 December 2026, 00:00 Pakistan time', l.r.status === 200 && l.b.launchAt === '2026-12-14T19:00:00.000Z' && typeof l.b.now === 'number', JSON.stringify(l.b));
   const login = await json('/api/admin/login', { method: 'POST', body: JSON.stringify({ email: 'owner@test.local', password: 'first-password-123' }) });
   const adminCookie = (login.r.headers.get('set-cookie') || '').split(';')[0];
   ok('owner from env can sign in', login.r.status === 200 && adminCookie.startsWith('arsh_admin='), login.r.status);
@@ -67,7 +67,10 @@ try {
   ok('signup works', join.r.status === 200 && join.b.number === 1, JSON.stringify(join.b));
   const log = (await json('/api/admin/emails', { headers: A })).b.emails;
   const welcome = log.find((e) => e.recipient === 'person1@test.local');
-  ok('welcome email logged with the countdown', welcome && /day/.test(welcome.subject) && /until the first collection opens/.test(welcome.body) && /No\. 0001/.test(welcome.body), JSON.stringify(welcome));
+  const expectDate = new Date(launchIso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Karachi' });
+  ok('welcome email has the supplied text, the date and the countdown', welcome && /^An invitation to the unchosen/.test(welcome.subject) && /day/.test(welcome.subject)
+    && welcome.body.includes('AN INVITATION TO THE UNCHOSEN.') && welcome.body.includes('Welcome to ARSH.') && welcome.body.includes(`Your early access begins on ${expectDate}.`)
+    && welcome.body.includes('25 pieces of each design. Never to be reproduced.') && welcome.body.includes('Until then, stay unchosen.') && welcome.body.includes('— ARSH') && /No\. 0001/.test(welcome.body) && !/HZK/.test(welcome.body), JSON.stringify(welcome));
   const bankCopy = log.find((e) => e.recipient === 'bank@test.local' && /0001/.test(e.subject));
   ok('data bank got a copy of the signup', bankCopy && /person1@test.local/.test(bankCopy.body) && /Lahore/.test(bankCopy.body), JSON.stringify(bankCopy));
   const exp = await json('/api/admin/waitlist/databank', { method: 'POST', headers: A });
@@ -97,7 +100,7 @@ try {
   c = await json('/api/cron/reminders', { headers: C });
   ok('cron: and never twice', c.b.sent === 0, JSON.stringify(c.b));
   const log3 = (await json('/api/admin/emails', { headers: A })).b.emails;
-  ok('cron: reminder content', log3.some((e) => e.recipient === 'person1@test.local' && /is open/.test(e.subject)));
+  ok('cron: reminder content', log3.some((e) => e.recipient === 'person1@test.local' && /early access has begun/.test(e.subject)));
   l = await json('/api/launch');
 } catch (err) {
   ok('test run completed', false, err.stack || err.message);
