@@ -2,6 +2,7 @@
 // with neither set it only records to email_log (admin → Settings → Email log), so nothing leaves the machine in development.
 
 import { q } from './db.js';
+import { EMAIL_LOGO_PNG } from './email-logo.js';
 
 const money = (n, c = 'PKR') => `${c} ${Number(n).toLocaleString('en-PK')}`;
 
@@ -22,12 +23,16 @@ async function smtpTransport() {
 // else only records the message in email_log.
 export async function sendEmail({ to, subject, text, html, attachments }) {
   let status = 'logged';
+  const logo = html?.includes('cid:arsh-logo');
   const from = process.env.EMAIL_FROM || (process.env.SMTP_USER ? `ARSH <${process.env.SMTP_USER}>` : 'ARSH <orders@example.com>');
   if (to && ((process.env.SMTP_USER && process.env.SMTP_PASS) || process.env.SMTP_HOST === 'json')) {
     try {
       const t = await smtpTransport();
       await t.sendMail({ from, to, subject, text, ...(html ? { html } : {}),
-        ...(attachments ? { attachments: attachments.map((a) => ({ filename: a.filename, content: a.content, encoding: 'base64' })) } : {}) });
+        attachments: [
+          ...(attachments || []).map((a) => ({ filename: a.filename, content: a.content, encoding: 'base64' })),
+          ...(logo ? [{ filename: 'arsh.png', content: EMAIL_LOGO_PNG, encoding: 'base64', cid: 'arsh-logo', contentDisposition: 'inline' }] : []),
+        ] });
       status = 'sent';
     } catch (err) {
       status = `failed ${err.message}`.slice(0, 120);
@@ -39,7 +44,10 @@ export async function sendEmail({ to, subject, text, html, attachments }) {
         const res = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ from, to: [to], subject, text, ...(html ? { html } : {}), ...(attachments ? { attachments } : {}) }),
+          body: JSON.stringify({ from, to: [to], subject, text, ...(html ? { html } : {}), attachments: [
+            ...(attachments || []),
+            ...(logo ? [{ filename: 'arsh.png', content: EMAIL_LOGO_PNG, content_id: 'arsh-logo' }] : []),
+          ] }),
         });
         status = res.ok ? 'sent' : `failed ${res.status}`;
       } catch (err) {
@@ -102,7 +110,7 @@ function shell({ base, preheader, body }) {
 <span style="display:none;max-height:0;overflow:hidden;opacity:0">${esc(preheader)}</span>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F6ECE1"><tr><td align="center" style="padding:24px 12px">
 <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#F6ECE1;font-family:Helvetica,Arial,sans-serif;color:#0D0D0D">
-<tr><td style="background:#F23B35;padding:28px 32px"><img src="${base}/assets/brand/email-wordmark.png?v=2" width="200" alt="ARSH" style="display:block;border:0;height:auto;max-width:100%"></td></tr>
+<tr><td style="background:#F23B35;padding:28px 32px"><img src="cid:arsh-logo" width="200" alt="ARSH" style="display:block;border:0;height:auto;max-width:100%"></td></tr>
 <tr><td style="padding:36px 32px 12px;font-size:16px;line-height:1.6">${body}</td></tr>
 <tr><td style="padding:12px 32px 36px;font-size:12px;line-height:1.5;color:#0D0D0D;opacity:.75">ARSH · Lahore, Pakistan<br>You are receiving this because you joined the ARSH waitlist.</td></tr>
 </table></td></tr></table></body></html>`;
