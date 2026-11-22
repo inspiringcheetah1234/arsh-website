@@ -144,6 +144,17 @@ ${countdownBlock(c)}
   return { to: entry.email, subject, text, html };
 }
 
+/** A message the owner writes in the admin to the whole list. Blank lines make paragraphs; {name} becomes the person's name. */
+export function waitlistBroadcast(entry, { subject, message, base = '' }) {
+  const first = String(entry.name || '').trim().split(/\s+/)[0];
+  const fill = (t) => String(t).replace(/\{name\}/gi, first || 'there');
+  const paras = fill(message).split(/\n\s*\n/).map((t) => t.trim()).filter(Boolean);
+  const html = shell({ base, preheader: paras[0]?.slice(0, 110) || subject, body:
+    `${paras.map((t) => `<p style="margin:0 0 18px">${esc(t).replace(/\n/g, '<br>')}</p>`).join('\n')}
+<p style="margin:24px 0 0;font-weight:700">— ARSH</p>` });
+  return { to: entry.email, subject: fill(subject), text: `${paras.join('\n\n')}\n\n— ARSH\n\nARSH · Lahore, Pakistan\nYou are receiving this because you joined the ARSH waitlist. Reply to this email to be removed.`, html };
+}
+
 /** Scheduled countdown emails: 't7' (one week), 't1' (the day before), 'open' (it is open). */
 export function waitlistReminder(entry, kind, { launchAt = '', base = '' } = {}) {
   const c = countdown(launchAt);

@@ -15,8 +15,8 @@ import {
 } from './pieces.js';
 import { readRaw, uploadImage, updateImage, reorderImages, deleteImage, listImages } from './images.js';
 import { storageKind } from './storage.js';
-import { sendEmail, orderConfirmation, orderShipped, newOrderAlert, waitlistWelcome, waitlistInvite, waitlistAlert, waitlistDataBank, waitlistDataBankExport } from './email.js';
-import { joinWaitlist, listWaitlist, updateEntry, deleteEntry, inviteEntries, waitlistCsv, resetWaitlist } from './waitlist.js';
+import { sendEmail, orderConfirmation, orderShipped, newOrderAlert, waitlistWelcome, waitlistInvite, waitlistAlert, waitlistDataBank, waitlistDataBankExport, waitlistBroadcast } from './email.js';
+import { joinWaitlist, listWaitlist, updateEntry, deleteEntry, inviteEntries, waitlistCsv, resetWaitlist, sendBroadcast } from './waitlist.js';
 
 const r = new Router();
 const raw = (body, type, headers = {}) => ({ __raw: true, body, type, headers });
@@ -230,6 +230,21 @@ r.post('/api/admin/waitlist/reset', admin(async (req) => {
   const b = await readBody(req);
   if (b.password !== (process.env.WAITLIST_RESET_PASSWORD || '223344')) throw bad('Wrong password');
   return resetWaitlist();
+}));
+r.post('/api/admin/waitlist/broadcast', admin(async (req) => {
+  const b = await readBody(req);
+  const subject = str(b.subject, { min: 3, max: 150, name: 'Subject' });
+  const message = str(b.message, { min: 10, max: 8000, name: 'Message' });
+  const base = siteUrl(await getSettings(), req);
+  if (b.test) { // one copy to the address typed in, with sample name
+    const to = str(b.to, { min: 3, max: 200, name: 'Test address' }).toLowerCase();
+    if (!EMAIL.test(to)) throw bad('Please enter a valid test address');
+    const status = await sendEmail(waitlistBroadcast({ email: to, name: 'Test' }, { subject: `[Test] ${subject}`, message, base }));
+    return { status, to };
+  }
+  const id = str(b.id, { min: 6, max: 40, name: 'Broadcast id' }).replace(/[^\w-]/g, '');
+  const audience = b.audience === 'all' ? 'all' : 'waiting';
+  return sendBroadcast({ id, subject, message, audience, base, dryRun: Boolean(b.dryRun) }, sendEmail, waitlistBroadcast);
 }));
 r.post('/api/admin/waitlist/invite', admin(async (req) => {
   const { invited, skipped } = await inviteEntries((await readBody(req)).ids);

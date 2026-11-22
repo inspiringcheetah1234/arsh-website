@@ -28,6 +28,51 @@ export async function viewWaitlist(ctx, qs) {
       toast(r.status === 'sent' ? `Sent ${r.count} entries to ${r.to}` : r.status === 'logged' ? `Not sent: email is not configured yet (saved in the email log)` : `Email ${r.status}`);
     } catch (err) { fail(err); } finally { bankBtn.disabled = false; }
   });
+  // ---------------------------------------------------------------- write to the list
+  const subjectIn = h('input', { id: 'bc-subject', maxlength: '150', placeholder: 'Subject' });
+  const messageIn = h('textarea', { id: 'bc-message', rows: '9', maxlength: '8000', placeholder: 'Write your message. Leave a blank line between paragraphs. Use {name} for their first name.' });
+  const audienceIn = h('select', { id: 'bc-audience' }, h('option', { value: 'waiting' }, 'People still waiting'), h('option', { value: 'all' }, 'Everyone (waiting and invited)'));
+  const testIn = h('input', { id: 'bc-test', type: 'email', placeholder: 'Your email, for a test copy' });
+  let bcId = null;
+  const bcStatus = h('p', { class: 'ui muted', role: 'status', 'aria-live': 'polite' });
+  const testBtn = h('button', { class: 'btn btn--ghost', type: 'button' }, 'Send me a test');
+  const sendBtn = h('button', { class: 'btn', type: 'button' }, 'Send to the list');
+  const field = (label, id, el) => h('div', { class: 'f' }, h('label', { for: id }, label), el);
+  const composer = h('div', { class: 'card', style: 'margin-bottom:1.5rem;display:none;gap:1rem' },
+    h('h2', { class: 'ui' }, 'Email the waitlist'),
+    field('To', 'bc-audience', audienceIn), field('Subject', 'bc-subject', subjectIn), field('Message', 'bc-message', messageIn),
+    h('div', { class: 'row' }, testIn, testBtn), bcStatus, h('div', { class: 'row' }, sendBtn));
+  const content = () => ({ subject: subjectIn.value.trim(), message: messageIn.value.trim() });
+  testBtn.addEventListener('click', async () => {
+    testBtn.disabled = true; bcStatus.textContent = '';
+    try {
+      const r = await api('/api/admin/waitlist/broadcast', { method: 'POST', body: { ...content(), test: true, to: testIn.value.trim() } });
+      bcStatus.textContent = r.status === 'sent' ? `Test sent to ${r.to}.` : r.status === 'logged' ? 'Not sent: email is not configured yet (saved in the email log).' : `Email ${r.status}`;
+    } catch (err) { fail(err); } finally { testBtn.disabled = false; }
+  });
+  sendBtn.addEventListener('click', async () => {
+    const id = bcId || (bcId = Date.now().toString(36)); // kept until a send fully succeeds, so a retry only reaches people who missed it
+    const body = { ...content(), audience: audienceIn.value, id };
+    sendBtn.disabled = true; bcStatus.textContent = '';
+    try {
+      const { count } = await api('/api/admin/waitlist/broadcast', { method: 'POST', body: { ...body, dryRun: true } });
+      if (!count) { bcStatus.textContent = 'Nobody to send to.'; return; }
+      if (!confirm(`Send "${body.subject}" to ${count} ${count === 1 ? 'person' : 'people'} now? This cannot be undone.`)) return;
+      let sent = 0, failed = 0;
+      for (let guard = 0; guard < 400; guard++) {
+        bcStatus.textContent = `Sending… ${sent} of ${count}`;
+        const r = await api('/api/admin/waitlist/broadcast', { method: 'POST', body });
+        sent += r.sent; failed = r.failed;
+        if (!r.remaining || !r.sent) break;
+      }
+      if (!failed) bcId = null;
+      bcStatus.textContent = failed ? `Sent ${sent} of ${count}. ${failed} failed; press Send again to retry only those.` : `Sent to ${sent} ${sent === 1 ? 'person' : 'people'}.`;
+      toast(`Emailed ${sent} of ${count}`);
+    } catch (err) { fail(err); } finally { sendBtn.disabled = false; }
+  });
+  const composeBtn = h('button', { class: 'btn', type: 'button' }, 'Email the list');
+  composeBtn.addEventListener('click', () => { const open = composer.style.display === 'none'; composer.style.display = open ? 'grid' : 'none'; if (open) subjectIn.focus(); });
+
   const resetBtn = h('button', { class: 'btn btn--ghost', type: 'button' }, 'Reset list to 0');
   resetBtn.addEventListener('click', async () => {
     const password = prompt('This permanently deletes EVERY waitlist entry and restarts numbering at 0001. It cannot be undone. Export the CSV first if you need it.\n\nEnter the reset password to continue.');
@@ -131,7 +176,8 @@ export async function viewWaitlist(ctx, qs) {
   const kpi = (label, value) => h('div', { class: 'kpi' }, h('span', { class: 'ui muted' }, label), h('b', {}, value));
 
   page('Waitlist',
-    [h('a', { class: 'btn btn--ghost', href: `/api/admin/waitlist/export?status=${encodeURIComponent(status)}` }, 'Export CSV'), bankBtn, resetBtn, inviteBtn],
+    [composeBtn, h('a', { class: 'btn btn--ghost', href: `/api/admin/waitlist/export?status=${encodeURIComponent(status)}` }, 'Export CSV'), bankBtn, resetBtn, inviteBtn],
+    composer,
     h('div', { class: 'kpis' }, kpi('Waiting', d.counts.waiting), kpi('Invited', d.counts.invited), kpi('Last 7 days', d.counts.last7), kpi('Total', d.counts.total)),
     h('div', { class: 'row', style: 'justify-content:space-between;margin-bottom:.5rem' }, tabs, search),
     table,

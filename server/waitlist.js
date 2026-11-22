@@ -116,6 +116,29 @@ export async function resetWaitlist() {
   return { deleted: n };
 }
 
+/**
+ * Sends a message to the list in batches (a serverless call has a time limit, so the admin page calls this repeatedly with the same
+ * broadcast id until `remaining` is 0). Each person is recorded in email_events as 'bc-<id>', so nobody is emailed twice.
+ */
+export async function sendBroadcast({ id, subject, message, audience, base, limit = 40, dryRun = false }, send, build) {
+  const statuses = audience === 'all' ? ['waiting', 'invited'] : ['waiting'];
+  const kind = `bc-${id}`;
+  const rows = await all(`SELECT w.* FROM waitlist w
+    WHERE w.status = ANY($1::text[]) AND NOT EXISTS (SELECT 1 FROM email_events e WHERE e.waitlist_id = w.id AND e.kind = $2)
+    ORDER BY w.number LIMIT ${dryRun ? 100000 : limit + 1}`, [statuses, kind]);
+  if (dryRun) return { count: rows.length };
+  const batch = rows.slice(0, limit);
+  let sent = 0, failed = 0;
+  for (const entry of batch) {
+    const status = await send(build(entry, { subject, message, base }));
+    if (status === 'sent' || status === 'logged') {
+      await q('INSERT INTO email_events (waitlist_id, kind) VALUES ($1, $2) ON CONFLICT DO NOTHING', [entry.id, kind]);
+      sent++;
+    } else failed++;
+  }
+  return { sent, failed, remaining: rows.length > limit ? 1 : (failed ? failed : 0) };
+}
+
 /** Hard delete: for "please remove me" requests. */
 export async function deleteEntry(id) {
   const row = await one('DELETE FROM waitlist WHERE id = $1 RETURNING id', [id]);
