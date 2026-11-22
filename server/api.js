@@ -228,7 +228,7 @@ r.post('/api/admin/waitlist/databank', admin(async () => {
 }));
 r.post('/api/admin/waitlist/reset', admin(async (req) => {
   const b = await readBody(req);
-  if (b.confirm !== 'RESET') throw bad('Type RESET to confirm');
+  if (b.password !== (process.env.WAITLIST_RESET_PASSWORD || '223344')) throw bad('Wrong password');
   return resetWaitlist();
 }));
 r.post('/api/admin/waitlist/invite', admin(async (req) => {

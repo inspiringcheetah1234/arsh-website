@@ -30,10 +30,11 @@ export async function viewWaitlist(ctx, qs) {
   });
   const resetBtn = h('button', { class: 'btn btn--ghost', type: 'button' }, 'Reset list to 0');
   resetBtn.addEventListener('click', async () => {
-    if (prompt('This permanently deletes EVERY waitlist entry and restarts numbering at 0001. It cannot be undone. Export the CSV first if you need it.\n\nType RESET to continue.') !== 'RESET') return;
+    const password = prompt('This permanently deletes EVERY waitlist entry and restarts numbering at 0001. It cannot be undone. Export the CSV first if you need it.\n\nEnter the reset password to continue.');
+    if (!password) return;
     resetBtn.disabled = true;
     try {
-      const r = await api('/api/admin/waitlist/reset', { method: 'POST', body: { confirm: 'RESET' } });
+      const r = await api('/api/admin/waitlist/reset', { method: 'POST', body: { password } });
       toast(`Waitlist reset (${r.deleted} removed)`);
       reload();
     } catch (err) { fail(err); } finally { resetBtn.disabled = false; }
