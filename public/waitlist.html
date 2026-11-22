@@ -39,6 +39,7 @@
         <span class="lockup"><span class="wordmark" role="img" aria-label="Arsh"></span><span class="mark" aria-hidden="true"></span></span>
       </div>
       <div class="waitlist__copy">
+        <span class="waitlist__logo mark" role="img" aria-label="ARSH"></span>
         <p class="eyebrow ui" data-copy="waitlist.eyebrow">Request access</p>
         <h1 class="waitlist__title display" id="wl-title" data-copy="waitlist.title">Opens by invitation.</h1>
         <p class="waitlist__lede" data-copy="waitlist.lede"></p>
@@ -73,8 +74,8 @@
             </svg>
             <div class="env__flap" aria-hidden="true"><span class="flap__out"></span><span class="flap__in"></span></div>
             <button type="button" class="seal" id="seal" data-copy-attr="aria-label:waitlist.sealLabel" aria-label="Break the wax seal to open the envelope">
-              <span class="seal__half seal__half--l" aria-hidden="true"><svg class="seal__art" viewBox="0 0 200 200"><use href="#seal-art"/></svg><span class="wordmark seal__word"></span></span>
-              <span class="seal__half seal__half--r" aria-hidden="true"><svg class="seal__art" viewBox="0 0 200 200"><use href="#seal-art"/></svg><span class="wordmark seal__word"></span></span>
+              <span class="seal__half seal__half--l" aria-hidden="true"><svg class="seal__art" viewBox="0 0 200 200"><use href="#seal-art"/></svg><span class="mark seal__mark"></span><span class="wordmark seal__word"></span></span>
+              <span class="seal__half seal__half--r" aria-hidden="true"><svg class="seal__art" viewBox="0 0 200 200"><use href="#seal-art"/></svg><span class="mark seal__mark"></span><span class="wordmark seal__word"></span></span>
             </button>
           </div>
         </div>
@@ -89,9 +90,9 @@
           <div class="fields">
             <div class="field field--full"><label for="wl-name" data-copy="waitlist.name">Name</label><input id="wl-name" name="name" autocomplete="name" maxlength="120" required></div>
             <div class="field field--full"><label for="wl-email" data-copy="waitlist.email">Email address</label><input id="wl-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="200" required></div>
-            <div class="field"><label for="wl-phone" data-copy="waitlist.phone">WhatsApp or phone</label><input id="wl-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+92 3xx xxxxxxx" maxlength="30"></div>
+            <div class="field"><label for="wl-phone" data-copy="waitlist.phone">WhatsApp or phone</label><input id="wl-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+92 3xx xxxxxxx" maxlength="30" required></div>
             <div class="field"><label for="wl-city" data-copy="waitlist.city">City</label><input id="wl-city" name="city" autocomplete="address-level2" maxlength="80"></div>
-            <div class="field"><label for="wl-interest" data-copy="waitlist.interest">Interested in</label><select id="wl-interest" name="productId"></select></div>
+            <div class="field"><label for="wl-interest" data-copy="waitlist.interest">Interested in</label><select id="wl-interest" name="interest" required></select></div>
             <div class="field"><label for="wl-size" data-copy="waitlist.size">Size</label><select id="wl-size" name="size"></select></div>
             <div class="field field--full"><label for="wl-heard" data-copy="waitlist.heard">How did you hear about us?</label><select id="wl-heard" name="heardFrom"></select></div>
           </div>

@@ -16,7 +16,7 @@ import {
 import { readRaw, uploadImage, updateImage, reorderImages, deleteImage, listImages } from './images.js';
 import { storageKind } from './storage.js';
 import { sendEmail, orderConfirmation, orderShipped, newOrderAlert, waitlistWelcome, waitlistInvite, waitlistAlert, waitlistDataBank, waitlistDataBankExport } from './email.js';
-import { joinWaitlist, listWaitlist, updateEntry, deleteEntry, inviteEntries, waitlistCsv } from './waitlist.js';
+import { joinWaitlist, listWaitlist, updateEntry, deleteEntry, inviteEntries, waitlistCsv, resetWaitlist } from './waitlist.js';
 
 const r = new Router();
 const raw = (body, type, headers = {}) => ({ __raw: true, body, type, headers });
@@ -225,6 +225,11 @@ r.post('/api/admin/waitlist/databank', admin(async () => {
   const count = Math.max(0, csv.trim().split('\n').length - 1);
   const status = await sendEmail(waitlistDataBankExport(csv, count, dataBankEmail));
   return { to: dataBankEmail, count, status };
+}));
+r.post('/api/admin/waitlist/reset', admin(async (req) => {
+  const b = await readBody(req);
+  if (b.confirm !== 'RESET') throw bad('Type RESET to confirm');
+  return resetWaitlist();
 }));
 r.post('/api/admin/waitlist/invite', admin(async (req) => {
   const { invited, skipped } = await inviteEntries((await readBody(req)).ids);

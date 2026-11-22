@@ -168,6 +168,7 @@ CREATE TABLE IF NOT EXISTS waitlist (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+ALTER TABLE waitlist ADD COLUMN IF NOT EXISTS interest TEXT NOT NULL DEFAULT '';
 CREATE UNIQUE INDEX IF NOT EXISTS waitlist_email_idx ON waitlist (lower(email));
 CREATE INDEX IF NOT EXISTS waitlist_status_idx ON waitlist (status, created_at DESC);
 

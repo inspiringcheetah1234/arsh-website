@@ -182,7 +182,7 @@ export function waitlistAlert(entry, to, base) {
 /** The "data bank" copy: every detail of a new signup, to the address chosen in Settings. */
 export function waitlistDataBank(entry, to) {
   const rows = [['Number', pad(entry.number)], ['Name', entry.name], ['Email', entry.email], ['Phone', entry.phone], ['City', entry.city],
-    ['Interested in', [entry.article, entry.product_name].filter(Boolean).join(' — ')], ['Size', entry.size], ['Heard from', entry.heard_from],
+    ['Interested in', [entry.interest, entry.article, entry.product_name].filter(Boolean).join(' — ')], ['Size', entry.size], ['Heard from', entry.heard_from],
     ['Source', entry.source], ['Joined', new Date(entry.created_at || Date.now()).toISOString()]];
   return { to, subject: `[ARSH data bank] ${pad(entry.number)} — ${entry.email}`, text: rows.map(([k, v]) => `${k}: ${v || '—'}`).join('\n') };
 }

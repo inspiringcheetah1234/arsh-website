@@ -17,6 +17,7 @@ html:has(.waitlist-page) { background: var(--blue); }
 .waitlist__sign, .waitlist__copy, .waitlist__tag { position: relative; }
 .waitlist__sign .lockup { --w: min(78%, 380px); margin-right: calc(var(--w) * 0.16); }
 .waitlist__copy .eyebrow { color: var(--space); }
+.waitlist__logo { width: 56px; color: var(--space); margin-bottom: 1rem; }
 .waitlist__title { font-size: clamp(4.5rem, 11vw, 10rem); color: var(--cream); max-width: 8ch; }
 .waitlist__lede { margin-top: 1.5rem; max-width: 26rem; color: var(--space); font-size: 1.0625rem; }
 .waitlist__tag { color: var(--space); }
@@ -104,7 +105,8 @@ html:has(.waitlist-page) { background: var(--blue); }
 .seal__half--l { clip-path: polygon(0 0, 54.6% 0, 47.6% 22%, 55.6% 45%, 46.6% 70%, 53.6% 100%, 0 100%); }
 .seal__half--r { clip-path: polygon(54% 0, 100% 0, 100% 100%, 53% 100%, 46% 70%, 55% 45%, 47% 22%); }
 .seal__art { position: absolute; inset: 0; width: 100%; height: 100%; }
-.seal__word { position: absolute; left: 19%; top: 34.2%; width: 62%; color: #7A1112; }
+.seal__word { position: absolute; left: 23%; top: 45%; width: 54%; color: #7A1112; }
+.seal__mark { position: absolute; left: 39%; top: 24%; width: 22%; color: #7A1112; }
 .envelope.s1 .seal { pointer-events: none; }
 .envelope.s1 .seal__half--l { transform: translate(-42%, 34%); opacity: 0; }
 .envelope.s1 .seal__half--r { transform: translate(44%, 46%); opacity: 0; }

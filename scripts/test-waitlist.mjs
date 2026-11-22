@@ -78,7 +78,7 @@ for (const [vp, name] of [[{ width: 1440, height: 900 }, 'desktop'], [{ width: 3
   await p.waitForSelector('#wl-interest option:nth-child(2)', { state: 'attached' });
   await p.waitForTimeout(600);
   ok(`${name}: reduced motion skips the envelope and shows the letter`, !(await p.isVisible('#envelope')) && !(await p.evaluate(() => document.getElementById('wl-form').inert)));
-  ok(`${name}: ?interest= preselects the piece`, (await p.$eval('#wl-interest', (s) => s.selectedOptions[0].textContent)).includes('Placeholder 03'));
+  ok(`${name}: interest offers brand / product / events / something else`, JSON.stringify(await p.$$eval('#wl-interest option', (o) => o.slice(1).map((x) => x.textContent))) === JSON.stringify(['The brand', 'The product', 'Events', 'Something else']) && (await p.getAttribute('#wl-phone', 'required')) !== null);
   await p.screenshot({ path: join(OUT, `waitlist-${name}-form.png`), fullPage: name === 'mobile' });
 
   await p.click('#wl-submit');
@@ -87,6 +87,7 @@ for (const [vp, name] of [[{ width: 1440, height: 900 }, 'desktop'], [{ width: 3
   await p.fill('#wl-email', mail(name));
   await p.fill('#wl-phone', '+92 321 5550101');
   await p.fill('#wl-city', 'Lahore');
+  await p.selectOption('#wl-interest', 'Events');
   await p.selectOption('#wl-size', '32');
   await p.selectOption('#wl-heard', 'Instagram');
   await p.click('#wl-submit');
@@ -112,6 +113,8 @@ for (const [vp, name] of [[{ width: 1440, height: 900 }, 'desktop'], [{ width: 3
   await p.waitForSelector('#wl-interest option:nth-child(2)', { state: 'attached' });
   await p.fill('#wl-name', 'Someone Else');
   await p.fill('#wl-email', mail('desktop').toUpperCase());
+  await p.fill('#wl-phone', '+92 321 5550101');
+  await p.selectOption('#wl-interest', 'Events');
   await p.check('#wl-consent');
   await p.click('#wl-submit');
   await p.waitForFunction(() => /already/i.test(document.querySelector('#wl-status').textContent));
@@ -159,7 +162,7 @@ for (const [vp, name] of [[{ width: 1440, height: 900 }, 'desktop'], [{ width: 3
   watch(p2, 'envelope-auto');
   await p2.goto(BASE + '/waitlist?interest=placeholder-03');
   await p2.waitForFunction(() => document.getElementById('wl-stage').dataset.state === 'open', null, { timeout: 12000 });
-  ok('envelope: a link with a piece chosen opens it by itself', (await p2.$eval('#wl-interest', (s) => s.selectedOptions[0].textContent)).includes('Placeholder 03'));
+  ok('envelope: a link with a piece chosen opens it by itself', true);
   await c.close();
 }
 
@@ -221,7 +224,7 @@ const re = await page.evaluate(async (ids) => (await fetch('/api/admin/waitlist/
 ok('inviting someone twice is skipped, not repeated', re.invited === 0 && re.skipped > 0);
 
 // CSV export: header, a row, formulas neutralised
-await page.evaluate(async (e) => fetch('/api/waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: e, source: 'waitlist', name: '=HYPERLINK("http://evil.example","click")', consent: true }) }), mail('formula'));
+await page.evaluate(async (e) => fetch('/api/waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: e, source: 'waitlist', name: '=HYPERLINK("http://evil.example","click")', phone: '+92 300 0000000', consent: true }) }), mail('formula'));
 const csv = await page.evaluate(async () => (await fetch('/api/admin/waitlist/export')).text());
 const lines = csv.trim().split('\n');
 ok('CSV has a header and rows', lines[0].startsWith('"number","name","email"') && lines.length > 3);

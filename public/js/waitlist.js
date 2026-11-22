@@ -38,7 +38,7 @@ const shop = await loadShop();
 const products = shop.products.filter((p) => p.id);
 
 const interest = $('#wl-interest');
-interest.replaceChildren(option('', t.interestAny), ...products.map((p) => option(String(p.id), `${p.name}${p.article ? ` (${p.article})` : ''}`)));
+interest.replaceChildren(option('', t.interestPick), ...t.interestOptions.map((o) => option(o, o)));
 const sizes = [...new Set(products.flatMap((p) => p.variants.map((v) => v.size)))];
 $('#wl-size').replaceChildren(option('', t.sizeAny), ...(sizes.length ? sizes : ['28', '30', '32', '34', '36']).map((s) => option(s, s)));
 $('#wl-heard').replaceChildren(option('', '—'), ...t.heardOptions.map((h) => option(h, h)));
@@ -46,7 +46,6 @@ $('#wl-heard').replaceChildren(option('', '—'), ...t.heardOptions.map((h) => o
 // Prefill from the landing page (?email=) or a piece (?interest=<slug>)
 if (params.get('email')) form.email.value = params.get('email').slice(0, 200);
 const wanted = products.find((p) => p.slug === params.get('interest'));
-if (wanted) interest.value = String(wanted.id);
 
 // The envelope: sealed until someone breaks the seal (reduced motion skips it and shows the letter).
 if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -94,9 +93,8 @@ function ticket(res, values) {
   number.setAttribute('tabindex', '-1');
   const fields = el('dl', 'ticket__fields ui');
   const row = (k, v) => { if (!v) return; const d = el('div'); d.append(el('dt', null, k), el('dd', null, v)); fields.append(d); };
-  const piece = products.find((p) => String(p.id) === values.productId);
   row('Passenger', values.name);
-  row('Interested in', piece ? `${piece.article ? piece.article + ' — ' : ''}${piece.name}` : t.interestAny);
+  row('Interested in', values.interest);
   row('Size', values.size);
   row('Issued', new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }));
   row('From', 'Lahore');
@@ -123,7 +121,8 @@ form.addEventListener('submit', async (e) => {
   const checks = [
     ['name', v('name').length >= 2, t.required],
     ['email', EMAIL.test(v('email')), v('email') ? t.invalidEmail : t.required],
-    ['phone', !v('phone') || PHONE.test(v('phone')), t.invalidPhone],
+    ['phone', PHONE.test(v('phone')), t.invalidPhone],
+    ['interest', Boolean(v('interest')), t.required],
     ['consent', form.consent.checked, t.consentMissing],
   ];
   let first = null;
@@ -133,13 +132,13 @@ form.addEventListener('submit', async (e) => {
   }
   if (first) { setStatus('error', checks.filter(([, ok]) => !ok).length > 1 ? t.required : first[1]); first[0].focus(); return; }
 
-  const values = { name: v('name'), email: v('email'), phone: v('phone'), city: v('city'), productId: v('productId'), size: v('size'), heardFrom: v('heardFrom') };
+  const values = { name: v('name'), email: v('email'), phone: v('phone'), city: v('city'), interest: v('interest'), size: v('size'), heardFrom: v('heardFrom') };
   submit.disabled = true;
   setStatus('pending', t.sending);
   try {
     const res = await api('/api/waitlist', {
       method: 'POST',
-      body: { ...values, productId: values.productId ? Number(values.productId) : null, consent: true, company: v('company'), source: 'waitlist' },
+      body: { ...values, productId: wanted ? wanted.id : null, consent: true, company: v('company'), source: 'waitlist' },
     });
     if (res.status === 'already' || !res.number) { setStatus('success', res.status === 'already' ? t.already : t.ticketNote.replace('{email}', values.email)); submit.disabled = false; return; }
     ticket(res, values);

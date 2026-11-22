@@ -28,6 +28,16 @@ export async function viewWaitlist(ctx, qs) {
       toast(r.status === 'sent' ? `Sent ${r.count} entries to ${r.to}` : r.status === 'logged' ? `Not sent: email is not configured yet (saved in the email log)` : `Email ${r.status}`);
     } catch (err) { fail(err); } finally { bankBtn.disabled = false; }
   });
+  const resetBtn = h('button', { class: 'btn btn--ghost', type: 'button' }, 'Reset list to 0');
+  resetBtn.addEventListener('click', async () => {
+    if (prompt('This permanently deletes EVERY waitlist entry and restarts numbering at 0001. It cannot be undone. Export the CSV first if you need it.\n\nType RESET to continue.') !== 'RESET') return;
+    resetBtn.disabled = true;
+    try {
+      const r = await api('/api/admin/waitlist/reset', { method: 'POST', body: { confirm: 'RESET' } });
+      toast(`Waitlist reset (${r.deleted} removed)`);
+      reload();
+    } catch (err) { fail(err); } finally { resetBtn.disabled = false; }
+  });
   inviteBtn.addEventListener('click', async () => {
     const n = selected.size;
     if (!n || !confirm(`Send the invitation email to ${n} ${n === 1 ? 'person' : 'people'}? They are marked as invited.`)) return;
@@ -66,7 +76,7 @@ export async function viewWaitlist(ctx, qs) {
         h('dt', {}, 'Email'), h('dd', {}, h('a', { href: `mailto:${entry.email}` }, entry.email)),
         entry.phone ? [h('dt', {}, 'Phone'), h('dd', {}, h('a', { href: `tel:${entry.phone.replace(/\s/g, '')}` }, entry.phone))] : null,
         entry.city ? [h('dt', {}, 'City'), h('dd', {}, entry.city)] : null,
-        h('dt', {}, 'Interested'), h('dd', {}, entry.article ? `${entry.article} — ${entry.product_name}${entry.size ? `, size ${entry.size}` : ''}` : entry.size ? `Size ${entry.size}` : 'Anything'),
+        h('dt', {}, 'Interested'), h('dd', {}, entry.interest ? `${entry.interest}${entry.size ? `, size ${entry.size}` : ''}` : entry.article ? `${entry.article} — ${entry.product_name}${entry.size ? `, size ${entry.size}` : ''}` : entry.size ? `Size ${entry.size}` : 'Anything'),
         entry.heard_from ? [h('dt', {}, 'Heard via'), h('dd', {}, entry.heard_from)] : null,
         h('dt', {}, 'Source'), h('dd', {}, entry.source),
         h('dt', {}, 'Joined'), h('dd', {}, when(entry.created_at)),
@@ -120,7 +130,7 @@ export async function viewWaitlist(ctx, qs) {
   const kpi = (label, value) => h('div', { class: 'kpi' }, h('span', { class: 'ui muted' }, label), h('b', {}, value));
 
   page('Waitlist',
-    [h('a', { class: 'btn btn--ghost', href: `/api/admin/waitlist/export?status=${encodeURIComponent(status)}` }, 'Export CSV'), bankBtn, inviteBtn],
+    [h('a', { class: 'btn btn--ghost', href: `/api/admin/waitlist/export?status=${encodeURIComponent(status)}` }, 'Export CSV'), bankBtn, resetBtn, inviteBtn],
     h('div', { class: 'kpis' }, kpi('Waiting', d.counts.waiting), kpi('Invited', d.counts.invited), kpi('Last 7 days', d.counts.last7), kpi('Total', d.counts.total)),
     h('div', { class: 'row', style: 'justify-content:space-between;margin-bottom:.5rem' }, tabs, search),
     table,

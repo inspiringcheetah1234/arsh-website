@@ -63,7 +63,7 @@ try {
   ok('launch: the date is public', l.b.launchAt === launchIso, JSON.stringify(l.b));
 
   // ---- signup -> welcome with countdown + data bank copy
-  const join = await json('/api/waitlist', { method: 'POST', body: JSON.stringify({ name: 'Test Person', email: 'person1@test.local', consent: true, source: 'waitlist', city: 'Lahore' }) });
+  const join = await json('/api/waitlist', { method: 'POST', body: JSON.stringify({ name: 'Test Person', email: 'person1@test.local', consent: true, source: 'waitlist', city: 'Lahore', phone: '+92 300 1111111' }) });
   ok('signup works', join.r.status === 200 && join.b.number === 1, JSON.stringify(join.b));
   const log = (await json('/api/admin/emails', { headers: A })).b.emails;
   const welcome = log.find((e) => e.recipient === 'person1@test.local');
@@ -78,7 +78,7 @@ try {
   const noAuth = await json('/api/admin/waitlist/databank', { method: 'POST' });
   ok('data bank export needs admin sign-in', noAuth.r.status === 401, noAuth.r.status);
   await json('/api/admin/settings', { method: 'PATCH', headers: A, body: JSON.stringify({ dataBankAuto: false }) });
-  await json('/api/waitlist', { method: 'POST', body: JSON.stringify({ name: 'Second', email: 'person2@test.local', consent: true, source: 'waitlist' }) });
+  await json('/api/waitlist', { method: 'POST', body: JSON.stringify({ name: 'Second', email: 'person2@test.local', consent: true, source: 'waitlist', phone: '+92 300 2222222' }) });
   const log2 = (await json('/api/admin/emails', { headers: A })).b.emails;
   ok('auto copy can be switched off', !log2.some((e) => e.recipient === 'bank@test.local' && /0002/.test(e.subject)));
 

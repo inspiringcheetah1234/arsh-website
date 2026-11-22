@@ -5,6 +5,7 @@ import { all, one, q } from './db.js';
 import { bad, notFound, str, int, EMAIL } from './http.js';
 
 const PHONE = /^[+\d][\d\s-]{6,}$/;
+export const INTERESTS = ['The brand', 'The product', 'Events', 'Something else'];
 const SOURCES = ['landing', 'waitlist', 'product'];
 export const STATUSES = ['waiting', 'invited', 'removed'];
 export const pad = (n) => String(n).padStart(4, '0');
@@ -23,7 +24,10 @@ export async function joinWaitlist(body) {
   if (!EMAIL.test(email)) throw bad('Please enter a valid email address');
   const name = strict ? str(body.name, { min: 2, max: 120, name: 'Name' }) : str(body.name ?? '', { max: 120 });
   const phone = str(body.phone ?? '', { max: 30 });
-  if (phone && !PHONE.test(phone)) throw bad('Please enter a valid phone number, or leave it empty');
+  if (strict && !phone) throw bad('Please enter your WhatsApp or phone number');
+  if (phone && !PHONE.test(phone)) throw bad('Please enter a valid phone number');
+  const interest = str(body.interest ?? '', { max: 40 });
+  if (interest && !INTERESTS.includes(interest)) throw bad('Please choose what you are interested in');
   const city = str(body.city ?? '', { max: 80 });
   const size = str(body.size ?? '', { max: 10 });
   const heardFrom = str(body.heardFrom ?? '', { max: 120 });
@@ -43,17 +47,18 @@ export async function joinWaitlist(body) {
         product_id = coalesce(product_id, $5),
         size = CASE WHEN size = '' THEN $6 ELSE size END,
         heard_from = CASE WHEN heard_from = '' THEN $7 ELSE heard_from END,
+        interest = CASE WHEN interest = '' THEN $8 ELSE interest END,
         status = CASE WHEN status = 'removed' THEN 'waiting' ELSE status END,
         updated_at = now()
-      WHERE id = $1`, [entry.id, name, phone, city, productId, size, heardFrom]);
+      WHERE id = $1`, [entry.id, name, phone, city, productId, size, heardFrom, interest]);
     return { created: false };
   };
 
   const existing = await one('SELECT * FROM waitlist WHERE lower(email) = $1', [email]);
   if (existing) return refresh(existing);
   try {
-    const entry = await one(`INSERT INTO waitlist (email, name, phone, city, product_id, size, heard_from, source)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`, [email, name, phone, city, productId, size, heardFrom, source]);
+    const entry = await one(`INSERT INTO waitlist (email, name, phone, city, product_id, size, heard_from, source, interest)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`, [email, name, phone, city, productId, size, heardFrom, source, interest]);
     const product = productId ? await one('SELECT article, name FROM products WHERE id = $1', [productId]) : null;
     return { created: true, entry: { ...entry, article: product?.article, product_name: product?.name } };
   } catch (err) {
@@ -103,6 +108,14 @@ export async function updateEntry(id, body) {
   return one(`${BASE} WHERE w.id = $1`, [id]);
 }
 
+/** Wipes the whole list and restarts numbering at 0001 (admin only; the route demands a typed confirmation). */
+export async function resetWaitlist() {
+  const { n } = await one('SELECT count(*)::int AS n FROM waitlist');
+  await q('DELETE FROM waitlist');
+  await q('ALTER SEQUENCE waitlist_number_seq RESTART WITH 1');
+  return { deleted: n };
+}
+
 /** Hard delete: for "please remove me" requests. */
 export async function deleteEntry(id) {
   const row = await one('DELETE FROM waitlist WHERE id = $1 RETURNING id', [id]);
@@ -129,8 +142,8 @@ const cell = (v) => {
 export async function waitlistCsv(status) {
   const { sql, params } = filters({ status });
   const rows = await all(`${BASE}${sql} ORDER BY w.number`, params);
-  const head = ['number', 'name', 'email', 'phone', 'city', 'article', 'size', 'heard_from', 'source', 'status', 'customer', 'note', 'joined', 'invited'];
-  const lines = rows.map((r) => [pad(r.number), r.name, r.email, r.phone, r.city, r.article || '', r.size, r.heard_from, r.source, r.status,
+  const head = ['number', 'name', 'email', 'phone', 'city', 'interest', 'article', 'size', 'heard_from', 'source', 'status', 'customer', 'note', 'joined', 'invited'];
+  const lines = rows.map((r) => [pad(r.number), r.name, r.email, r.phone, r.city, r.interest, r.article || '', r.size, r.heard_from, r.source, r.status,
     r.has_order ? 'yes' : '', r.note, new Date(r.created_at).toISOString(), r.invited_at ? new Date(r.invited_at).toISOString() : '']);
   return [head, ...lines].map((l) => l.map(cell).join(',')).join('\n') + '\n';
 }
