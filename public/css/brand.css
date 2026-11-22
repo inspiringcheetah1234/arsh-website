@@ -81,8 +81,8 @@
   -webkit-mask: var(--src) center / contain no-repeat;
   mask: var(--src) center / contain no-repeat;
 }
-.wordmark { --src: url("/assets/brand/wordmark.svg"); aspect-ratio: 1906 / 972; }
-.mark { --src: url("/assets/brand/andromeda-mark.svg"); aspect-ratio: 1590 / 1264; }
+.wordmark { --src: url("/assets/brand/wordmark.svg?v=2"); aspect-ratio: 1906 / 972; }
+.mark { --src: url("/assets/brand/andromeda-mark.svg?v=2"); aspect-ratio: 1590 / 1264; }
 
 /* Lockup: the mark sits to the right of the wordmark, aligned to the top of the h.
    Set the size with --w (the wordmark's width). The mark is 15.5% of it, so it stays ≥ 40 px

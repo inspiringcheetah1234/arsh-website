@@ -102,7 +102,7 @@ function shell({ base, preheader, body }) {
 <span style="display:none;max-height:0;overflow:hidden;opacity:0">${esc(preheader)}</span>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F6ECE1"><tr><td align="center" style="padding:24px 12px">
 <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#F6ECE1;font-family:Helvetica,Arial,sans-serif;color:#0D0D0D">
-<tr><td style="background:#F23B35;padding:28px 32px"><img src="${base}/assets/brand/email-wordmark.png" width="200" alt="ARSH" style="display:block;border:0;height:auto;max-width:100%"></td></tr>
+<tr><td style="background:#F23B35;padding:28px 32px"><img src="${base}/assets/brand/email-wordmark.png?v=2" width="200" alt="ARSH" style="display:block;border:0;height:auto;max-width:100%"></td></tr>
 <tr><td style="padding:36px 32px 12px;font-size:16px;line-height:1.6">${body}</td></tr>
 <tr><td style="padding:12px 32px 36px;font-size:12px;line-height:1.5;color:#0D0D0D;opacity:.75">ARSH · Lahore, Pakistan<br>You are receiving this because you joined the ARSH waitlist.</td></tr>
 </table></td></tr></table></body></html>`;
