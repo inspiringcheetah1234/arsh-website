@@ -1,7 +1,7 @@
-media/
-brand/
-scripts/
-.data/
+/media/
+/brand/
+/scripts/
+/.data/
 .env
-README.md
-public/uploads/
+/README.md
+/public/uploads/
