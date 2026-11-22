@@ -52,7 +52,15 @@
     "soldOut": "Sold out",
     "soldOutRequest": "Sold out — request access",
     "lowStock": "Only a few left in this size.",
-    "care": "Wash inside out in cold water. Let it fade."
+    "care": "Wash inside out in cold water. Let it fade.",
+    "lockPrice": "Price locked",
+    "lockBuy": "Buy now",
+    "lockText": "Early access is for waitlist members. Enter the email you joined with to unlock prices and ordering.",
+    "lockEmail": "Your waitlist email",
+    "lockSubmit": "Unlock",
+    "lockChecking": "Checking",
+    "lockInvalid": "Please enter a valid email address.",
+    "lockDone": "Unlocked. Welcome back."
   },
   "box": {
     "eyebrow": "The box",
@@ -122,7 +130,12 @@
     "city": "City (optional)",
     "interest": "What are you interested in?",
     "interestPick": "Choose one",
-    "interestOptions": ["The brand", "The product", "Events", "Something else"],
+    "interestOptions": [
+      "The brand",
+      "The product",
+      "Events",
+      "Something else"
+    ],
     "interestAny": "Anything",
     "size": "Size (optional)",
     "sizeAny": "Not sure yet",

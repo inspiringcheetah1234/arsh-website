@@ -2,6 +2,7 @@
 <html lang="en" class="is-loading">
 <head>
   <meta charset="utf-8">
+  <script src="/js/gate.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>ARSH BY HZK</title>
   <meta name="description" content="ARSH BY HZK. Denim from Lahore, worn under the same sky.">
@@ -201,6 +202,14 @@
           <p data-copy="catalogue.sizeGuideNote">Measurements to follow.</p>
         </details>
         <p class="detail__care" data-copy="catalogue.care"></p>
+        <form class="lock" id="detail-lock" novalidate hidden>
+          <p class="lock__price ui"><svg class="lock__icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="2"/><rect x="4" y="10" width="16" height="11" fill="currentColor"/></svg><span data-copy="catalogue.lockPrice">Price locked</span></p>
+          <button type="button" class="button lock__buy" disabled><svg class="lock__icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="2"/><rect x="4" y="10" width="16" height="11" fill="currentColor"/></svg><span data-copy="catalogue.lockBuy">Buy now</span></button>
+          <p class="lock__text" data-copy="catalogue.lockText">Early access is for waitlist members. Enter the email you joined with to unlock prices and ordering.</p>
+          <label class="sr-only" for="lock-email" data-copy="catalogue.lockEmail">Your waitlist email</label>
+          <div class="lock__row"><input id="lock-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="200" placeholder="Your waitlist email" required><button class="button button--red" type="submit" data-copy="catalogue.lockSubmit">Unlock</button></div>
+          <p class="lock__status ui" id="lock-status" role="status" aria-live="polite"></p>
+        </form>
         <button type="button" class="button" id="detail-add" data-copy="catalogue.add" hidden>Add to bag</button>
         <button type="button" class="button" id="detail-request" data-copy="catalogue.request">Request access</button>
         <p class="detail__status ui" id="detail-status" role="status" aria-live="polite"></p>

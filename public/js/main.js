@@ -45,7 +45,7 @@ async function boot() {
 
   const [copy, config, shop] = await Promise.all([loadJSON('data/copy.json'), loadJSON('data/config.json'), loadShop()]);
   const catalogue = {
-    collection: copy.catalogue.collection, showPrices: shop.shopOpen, currency: shop.currency, shopOpen: shop.shopOpen,
+    collection: copy.catalogue.collection, showPrices: shop.shopOpen, currency: shop.currency, shopOpen: shop.shopOpen, locked: Boolean(shop.locked),
     items: shop.products.map((p) => ({ ...p, meta: p.meta || {} })),
   };
   progress.data = 1; report();
@@ -126,7 +126,7 @@ function initDetail({ catalogue, copy, scroll, access, drawer }) {
     img: $('#detail-img'), thumbs: $('#detail-thumbs'), index: $('#detail-index'), name: $('#detail-name'), desc: $('#detail-desc'),
     fit: $('#detail-fit'), fabric: $('#detail-fabric'), wash: $('#detail-wash'), edition: $('#detail-edition'),
     price: $('#detail-price'), sizes: $('#detail-sizes'), sizesWrap: $('#detail-sizes-wrap'),
-    add: $('#detail-add'), request: $('#detail-request'), status: $('#detail-status'),
+    add: $('#detail-add'), request: $('#detail-request'), status: $('#detail-status'), lock: $('#detail-lock'),
   };
   let returnTo = null;
   let current = null;
@@ -141,6 +141,21 @@ function initDetail({ catalogue, copy, scroll, access, drawer }) {
   // Sold out, or the shop is not open yet: the waitlist page, with this piece already chosen.
   el.request.addEventListener('click', () => {
     location.href = `/waitlist${current?.slug ? `?interest=${encodeURIComponent(current.slug)}` : ''}`;
+  });
+  // Early access: a waitlist email unlocks prices and ordering (the server sets a cookie), then the page reloads with prices.
+  el.lock.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = el.lock.email, status = $('#lock-status'), btn = el.lock.querySelector('[type=submit]');
+    const email = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { status.textContent = copy.catalogue.lockInvalid; input.focus(); return; }
+    btn.disabled = true; status.textContent = copy.catalogue.lockChecking;
+    try {
+      const res = await fetch('/api/early-access', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ email }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { status.textContent = data.error || 'Something went wrong. Please try again.'; btn.disabled = false; return; }
+      status.textContent = copy.catalogue.lockDone;
+      location.reload();
+    } catch { status.textContent = 'Something went wrong. Please try again.'; btn.disabled = false; }
   });
   el.add.addEventListener('click', () => {
     if (!chosen) { el.status.textContent = copy.catalogue.chooseSize; el.sizes.querySelector('input')?.focus(); return; }
@@ -205,7 +220,9 @@ function initDetail({ catalogue, copy, scroll, access, drawer }) {
       el.price.textContent = item.price != null ? money(item.price, catalogue.currency) : '';
       el.sizesWrap.hidden = !catalogue.shopOpen || !item.variants?.length;
       el.add.hidden = !canBuy;
-      el.request.hidden = canBuy;
+      el.request.hidden = canBuy || catalogue.locked;
+      el.lock.hidden = !catalogue.locked;
+      if (catalogue.locked) $('#lock-status').textContent = '';
       el.request.textContent = catalogue.shopOpen ? copy.catalogue.soldOutRequest : copy.catalogue.request;
       el.status.textContent = '';
       if (catalogue.shopOpen) renderSizes(item);

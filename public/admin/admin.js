@@ -123,10 +123,38 @@ async function boot() {
 }
 
 // ---------------------------------------------------------------- overview
+// Website status: waitlist only → early access (waitlist members unlock prices) → open to everyone.
+function launchCard(settings) {
+  const phase = settings.launchPhase || 'waitlist';
+  const STEPS = [
+    ['waitlist', 'Waitlist only', 'Everyone who opens the website is sent to the waitlist page.'],
+    ['early', 'Early access', 'The whole website is visible. Prices and Buy now are locked; waitlist members unlock them with their email.'],
+    ['open', 'Open to everyone', 'Anyone can see prices and order.'],
+  ];
+  const go = async (next, question) => {
+    if (!confirm(question)) return;
+    try { await api('/api/admin/launch', { method: 'POST', body: { phase: next } }); toast('Website status updated'); viewDashboard(); }
+    catch (err) { fail(err); }
+  };
+  const btn = (label, next, question, primary) => h('button', { class: `btn${primary ? '' : ' btn--ghost'}`, type: 'button', onclick: () => go(next, question) }, label);
+  const current = STEPS.find(([k]) => k === phase);
+  const owner = me?.role === 'owner';
+  return h('div', { class: 'card', style: 'margin-bottom:1.5rem' },
+    h('h2', {}, 'Website status'),
+    h('p', { style: 'margin:.5rem 0 0' }, h('b', {}, `Now: ${current[1]}. `), current[2]),
+    phase === 'early' && settings.earlyOpenedAt ? h('p', { class: 'muted', style: 'margin:.5rem 0 0' }, `Early access opened ${new Date(settings.earlyOpenedAt).toLocaleString('en-GB')}. People who join the waitlist after this wait for the public opening.`) : null,
+    owner ? h('div', { class: 'row', style: 'margin-top:1rem;flex-wrap:wrap;gap:.5rem' },
+      phase !== 'early' ? btn('Open early access', 'early', 'Open early access now? The whole website becomes visible; prices and buying stay locked except for waitlist members.', phase === 'waitlist') : null,
+      phase !== 'open' ? btn('Open to everyone', 'open', 'Open the website to everyone now? Anyone will be able to see prices and order.', phase === 'early') : null,
+      phase !== 'waitlist' ? btn('Back to waitlist only', 'waitlist', 'Hide the website again and send everyone to the waitlist page?') : null)
+      : h('p', { class: 'muted', style: 'margin-top:1rem' }, 'Only the owner can change this.'));
+}
+
 async function viewDashboard() {
-  const d = await api('/api/admin/dashboard');
+  const [d, { settings }] = await Promise.all([api('/api/admin/dashboard'), api('/api/admin/settings')]);
   const kpi = (label, value, href, alert) => h('a', { class: `kpi${alert ? ' is-alert' : ''}`, href }, h('span', { class: 'ui muted' }, label), h('b', {}, value));
   page('Overview', h('a', { class: 'btn btn--scan', href: '#/scan' }, 'Scan a piece'),
+    launchCard(settings),
     h('div', { class: 'kpis' },
       kpi('Orders to scan', d.toScan, '#/orders?status=confirmed', d.toScan > 0),
       kpi('New orders', d.byStatus.pending || 0, '#/orders?status=pending', (d.byStatus.pending || 0) > 0),

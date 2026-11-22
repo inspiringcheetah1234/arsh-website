@@ -17,8 +17,10 @@ export function dueKind(launchAt, now = Date.now()) {
   return null;
 }
 
-export async function runReminders({ launchAt, base, limit = 150 }) {
-  const due = dueKind(launchAt);
+export async function runReminders({ launchAt, base, phase = 'early', limit = 150 }) {
+  let due = dueKind(launchAt);
+  // "Your early access has begun" waits until the owner has actually opened early access in the admin.
+  if (due?.kind === 'open' && phase === 'waitlist') return { kind: null, sent: 0, note: 'launch time passed, but early access is not opened in the admin yet' };
   if (!due) return { kind: null, sent: 0, note: launchAt ? 'nothing due yet' : 'no launch date set' };
   const rows = await all(`SELECT w.* FROM waitlist w
     WHERE w.status = 'waiting' AND w.created_at < $1

@@ -10,8 +10,6 @@ import { fileURLToPath } from 'node:url';
 import { handle } from '../server/api.js';
 import { db } from '../server/db.js';
 import { seedCatalogue } from '../server/cli.js';
-import { GATED, GATE_TARGET, PREVIEW_COOKIE } from '../server/gate.js';
-import { parseCookies } from '../server/http.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const PORT = Number(process.argv[2] || process.env.PORT || 4173);
@@ -50,10 +48,6 @@ await bootstrap();
 createServer(async (req, res) => {
   const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   if (path === '/api' || path.startsWith('/api/')) return handle(req, res);
-  if (process.env.SITE_GATE === '1' && GATED.includes(path.replace(/(.)\/$/, '$1')) && !parseCookies(req)[PREVIEW_COOKIE]) {
-    res.writeHead(307, { Location: GATE_TARGET, 'Cache-Control': 'no-store' }).end();
-    return;
-  }
   const rw = REWRITES.find(([re]) => re.test(path));
   const candidates = rw ? [rw[1]] : path.endsWith('/') ? [path + 'index.html'] : [path, path + '.html'];
   for (const c of candidates) if (await file(res, c)) return;

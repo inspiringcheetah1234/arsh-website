@@ -4,7 +4,7 @@ import { Router, HttpError, send, readBody, bad, str, int, EMAIL } from './http.
 import { all, one, q } from './db.js';
 import { requireAdmin, currentAdmin, verifyPassword, hashPassword, sessionCookie, clearCookie, throttle, clearThrottle } from './auth.js';
 import { getSettings, saveSettings, siteUrl, DEFAULTS } from './settings.js';
-import { PREVIEW_COOKIE } from './gate.js';
+import { PREVIEW_COOKIE, EARLY_COOKIE, PHASES, viewerState, earlyMember, earlyCookieValue } from './launch.js';
 import { timingSafeEqual } from 'node:crypto';
 import { runReminders } from './reminders.js';
 import { listProducts, publicProduct, createProduct, updateProduct } from './products.js';
@@ -22,17 +22,20 @@ const r = new Router();
 const raw = (body, type, headers = {}) => ({ __raw: true, body, type, headers });
 
 // ------------------------------------------------------------------ public
-r.get('/api/shop', async () => {
+r.get('/api/shop', async (req) => {
   const s = await getSettings();
-  const products = (await listProducts()).map(publicProduct);
+  const v = viewerState(req, s);
+  // Locked (waitlist / early access without a waitlist email): no prices leave the server.
+  const products = (await listProducts()).map(publicProduct).map((p) => (v.unlocked ? p : { ...p, price: null }));
   return {
-    shopOpen: s.shopOpen, currency: s.currency, shippingFlat: s.shippingFlat, freeShippingOver: s.freeShippingOver,
+    __headers: { 'Cache-Control': 'no-store' }, phase: v.phase, locked: v.locked, shopOpen: v.canBuy, currency: s.currency, shippingFlat: s.shippingFlat, freeShippingOver: s.freeShippingOver,
     paymentMethods: s.paymentMethods, products,
   };
 });
 
 r.post('/api/orders', async (req) => {
   const settings = await getSettings();
+  if (!viewerState(req, settings).canBuy) throw new HttpError(403, 'Ordering is not open to you yet');
   const base = siteUrl(settings, req);
   const { order, items } = await createOrder(await readBody(req), settings);
   await sendEmail(orderConfirmation(order, items, settings, base));
@@ -68,9 +71,30 @@ r.post('/api/waitlist', joinHandler);
 r.post('/api/access', joinHandler);
 
 // Launch time for the live countdown on /waitlist (server time included so a wrong clock on the visitor's device does not matter).
-r.get('/api/launch', async () => ({ launchAt: (await getSettings()).launchAt || null, now: Date.now() }));
+r.get('/api/launch', async (req) => {
+  const s = await getSettings();
+  const v = viewerState(req, s);
+  return { __headers: { 'Cache-Control': 'no-store' }, launchAt: s.launchAt || null, now: Date.now(), phase: v.phase, gated: v.gated, locked: v.locked };
+});
 
-// Pre-launch preview: /api/preview?key=<PREVIEW_KEY> lets the owner past the waitlist gate (see server/gate.js).
+// Early access: a waitlist member types their email and gets a cookie that unlocks prices and ordering.
+r.post('/api/early-access', async (req) => {
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || '';
+  throttle(`early|${ip}`, 15);
+  const s = await getSettings();
+  const v = viewerState(req, s);
+  if (v.phase === 'open') return { ok: true };
+  if (v.phase !== 'early') throw new HttpError(403, 'Early access has not opened yet');
+  const email = str((await readBody(req)).email, { min: 3, max: 200, name: 'Email' }).toLowerCase();
+  if (!EMAIL.test(email)) throw bad('Please enter a valid email address');
+  const m = await earlyMember(email, s);
+  if (m === 'unknown') throw new HttpError(404, 'That email is not on the waitlist. Early access is for waitlist members only.');
+  if (m === 'late') throw new HttpError(403, 'You joined after early access opened. You will be able to order when the collection opens to everyone.');
+  const secure = process.env.VERCEL || process.env.NODE_ENV === 'production' ? '; Secure' : '';
+  return { ok: true, __headers: { 'Set-Cookie': `${EARLY_COOKIE}=${earlyCookieValue(email)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=7776000${secure}` } };
+});
+
+// Pre-launch preview: /api/preview?key=<PREVIEW_KEY> lets the owner past the waitlist phase (see server/launch.js).
 r.get('/api/preview', async (req, { query }) => {
   const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || '';
   throttle(`preview|${ip}`, 10);
@@ -87,7 +111,7 @@ r.get('/api/cron/reminders', async (req) => {
   const want = Buffer.from(`Bearer ${secret || ''}`), got = Buffer.from(req.headers.authorization || '');
   if (!secret || got.length !== want.length || !timingSafeEqual(want, got)) throw new HttpError(401, 'Unauthorized');
   const settings = await getSettings();
-  return runReminders({ launchAt: settings.launchAt, base: siteUrl(settings, req) });
+  return runReminders({ launchAt: settings.launchAt, base: siteUrl(settings, req), phase: settings.launchPhase });
 });
 
 // ------------------------------------------------------------------ admin auth
@@ -173,6 +197,18 @@ r.get('/api/admin/batches/:id/csv', admin(async (req, { params }) => {
   const id = int(params.id, { min: 1 });
   return raw(await batchCsv(id, siteUrl(await getSettings(), req)), 'text/csv; charset=utf-8',
     { 'Content-Disposition': `attachment; filename="arsh-batch-${String(id).padStart(3, '0')}.csv"` });
+}));
+
+// Launch control: the owner moves the site between waitlist → early access → open to all.
+r.post('/api/admin/launch', admin(async (req, { admin: a }) => {
+  if (a.role !== 'owner') throw new HttpError(403, 'Only the owner can change this');
+  const { phase } = await readBody(req);
+  if (!PHASES.includes(phase)) throw bad('Unknown phase');
+  const s = await getSettings();
+  const patch = { launchPhase: phase };
+  if (phase === 'early' && s.launchPhase !== 'early') patch.earlyOpenedAt = new Date().toISOString();
+  const out = await saveSettings(patch);
+  return { phase: out.launchPhase, earlyOpenedAt: out.earlyOpenedAt };
 }));
 
 r.get('/api/admin/settings', admin(async () => ({ settings: await getSettings(), defaults: DEFAULTS })));

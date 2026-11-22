@@ -13,6 +13,8 @@ export const DEFAULTS = {
   ownerDisplay: 'first-initial',  // how the owner shows on a piece page: 'full' | 'first-initial' | 'first'
   notifyEmail: '',                // where new-order alerts go
   launchAt: '2026-12-14T19:00:00.000Z', // early access opens 15 Dec 2026, 00:00 Pakistan time; drives the countdown on /waitlist and in emails (admin can change it; '' = no countdown)
+  launchPhase: 'waitlist',        // 'waitlist' | 'early' | 'open' — set from Admin → Overview
+  earlyOpenedAt: '',              // when early access was opened; only people who joined before this unlock
   dataBankEmail: '',              // every waitlist signup is also emailed here, and the admin can email the full list here
   dataBankAuto: true,             // copy each new signup to dataBankEmail automatically
 };
