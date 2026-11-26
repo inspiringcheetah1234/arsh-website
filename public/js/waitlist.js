@@ -39,8 +39,9 @@ const products = shop.products.filter((p) => p.id);
 
 const interest = $('#wl-interest');
 interest.replaceChildren(option('', t.interestPick), ...t.interestOptions.map((o) => option(o, o)));
-const sizes = [...new Set(products.flatMap((p) => p.variants.map((v) => v.size)))];
-$('#wl-size').replaceChildren(option('', t.sizeAny), ...(sizes.length ? sizes : ['28', '30', '32', '34', '36']).map((s) => option(s, s)));
+const sizes = [...new Set(['24', '26', '28', '30', '32', '34', '36', ...products.flatMap((p) => p.variants.map((v) => v.size))])]
+  .sort((a, b) => (parseFloat(a) || 999) - (parseFloat(b) || 999) || String(a).localeCompare(b));
+$('#wl-size').replaceChildren(option('', t.sizeAny), ...sizes.map((s) => option(s, s)));
 $('#wl-heard').replaceChildren(option('', '—'), ...t.heardOptions.map((h) => option(h, h)));
 
 // Prefill from the landing page (?email=) or a piece (?interest=<slug>)
